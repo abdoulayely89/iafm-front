@@ -1,171 +1,203 @@
-/* ================================
-   Page Mes Cours
-   ================================ */
+/* ===== PAGE & CONTAINER ===== */
 
-   .my-courses-page {
-    background: #f5f5f8;
-    min-height: 100vh;
+.my-courses-page {
+    padding: 16px;
   }
   
   .my-courses-container {
-    max-width: 1180px;
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 24px 16px 48px;
   }
   
-  /* Header */
+  /* ===== HEADER ===== */
   
   .my-courses-header {
     display: flex;
-    align-items: flex-end;
+    align-items: flex-start;
     justify-content: space-between;
-    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
   }
   
   .my-courses-title {
-    margin-bottom: 4px;
+    margin-bottom: 4px !important;
+    font-size: 22px !important;
   }
   
   .my-courses-subtitle {
-    font-size: 14px;
+    font-size: 13px;
   }
   
-  /* Carte liste */
+  /* Desktop / tablettes */
+  @media (min-width: 768px) {
+    .my-courses-page {
+      padding: 24px 32px;
+    }
   
-  .my-courses-list-card {
-    border-radius: 16px;
-    box-shadow: 0 8px 26px rgba(15, 23, 42, 0.06);
+    .my-courses-title {
+      font-size: 26px !important;
+    }
+  
+    .my-courses-subtitle {
+      font-size: 14px;
+    }
   }
   
-  /* Empty state */
+  /* ===== BLOC EMPTY ===== */
   
   .my-courses-empty-card {
     border-radius: 16px;
-    box-shadow: 0 8px 26px rgba(15, 23, 42, 0.06);
-    text-align: left;
+    padding: 16px;
   }
   
-  .my-courses-empty-card .ant-typography {
-    margin-bottom: 8px;
+  .my-courses-empty-title {
+    margin-bottom: 8px !important;
   }
   
-  /* ================================
-     Carte de cours
-     ================================ */
+  .my-courses-empty-text {
+    margin-bottom: 16px !important;
+  }
+  
+  /* ===== LISTE DES COURS ===== */
+  
+  .my-courses-list-card {
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.03);
+  }
+  
+  .my-courses-list {
+    margin-top: 8px;
+  }
+  
+  .my-course-list-item {
+    display: flex;
+  }
+  
+  /* ===== CARTE D’UN COURS ===== */
   
   .my-course-card {
-    border-radius: 14px;
-    overflow: hidden;
     display: flex;
     flex-direction: column;
     height: 100%;
+    border-radius: 16px !important;
+    overflow: hidden;
   }
   
-  /* Image */
-  
+  /* Image du cours */
   .my-course-card-imageWrapper {
-    height: 160px;
+    width: 100%;
+    height: 180px;
+    background: #f5f5f5;
     overflow: hidden;
-    background: #e5e7eb;
   }
   
   .my-course-card-image {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    display: block;
   }
   
-  /* Corps */
+  /* Corps de la carte */
   
   .my-course-card-body {
-    padding: 14px 14px 16px;
     display: flex;
     flex-direction: column;
+    gap: 6px;
     height: 100%;
   }
+  
+  /* Tags (niveau, langue, statut) */
   
   .my-course-card-header {
     display: flex;
     flex-wrap: wrap;
     gap: 4px;
-    margin-bottom: 6px;
+    margin-bottom: 2px;
   }
   
   .my-course-tag {
-    font-size: 11px;
+    margin: 0 !important;
+    font-size: 11px !important;
   }
   
   /* Titre */
   
   .my-course-card-title {
-    margin-bottom: 4px !important;
-    font-size: 16px;
-  }
-  
-  .my-course-card-title a {
-    color: #111827;
-  }
-  
-  .my-course-card-title a:hover {
-    color: #1d4ed8;
+    margin: 4px 0 4px 0 !important;
+    font-size: 15px !important;
+    line-height: 1.4;
+    word-break: break-word;
   }
   
   /* Description */
   
   .my-course-card-description {
     font-size: 13px;
-    color: #4b5563;
-    margin-bottom: 10px;
+    color: rgba(0, 0, 0, 0.65);
+    margin-bottom: 8px !important;
+    word-break: break-word;
   }
   
   /* Progression */
   
   .my-course-card-progress {
-    margin-bottom: 10px;
+    margin-top: 4px;
   }
   
   .my-course-card-progress-bar {
     width: 100%;
-    height: 6px;
-    background: #e5e7eb;
+    height: 8px;
     border-radius: 999px;
+    background: #f5f5f5;
     overflow: hidden;
     margin-bottom: 4px;
   }
   
   .my-course-card-progress-fill {
     height: 100%;
-    background: linear-gradient(90deg, #22c55e, #16a34a);
-    border-radius: 999px;
+    background: #1890ff;
+    transition: width 0.3s ease;
   }
   
   .my-course-card-progress-label {
-    font-size: 11px;
+    font-size: 12px;
   }
   
-  /* Footer */
+  /* Footer (bouton) */
   
   .my-course-card-footer {
     margin-top: auto;
+    padding-top: 8px;
   }
   
-  /* ================================
-     Responsive
-     ================================ */
+  /* ===== ADAPTATION MOBILE ===== */
   
-  @media (max-width: 768px) {
-    .my-courses-container {
-      padding: 16px 12px 32px;
+  @media (max-width: 575.98px) {
+    .my-courses-page {
+      padding: 16px 12px;
     }
   
-    .my-courses-header {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 4px;
+    .my-courses-list-card {
+      box-shadow: none;
+      padding: 0;
+    }
+  
+    .my-course-card {
+      border-radius: 12px !important;
     }
   
     .my-course-card-imageWrapper {
-      height: 150px;
+      height: 160px;
+    }
+  
+    .my-course-card-title {
+      font-size: 14px !important;
+    }
+  
+    .my-course-card-description {
+      font-size: 12px;
     }
   }
   

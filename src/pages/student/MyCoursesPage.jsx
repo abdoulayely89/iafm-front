@@ -1,4 +1,3 @@
-// src/pages/student/MyCoursesPage.jsx
 import React, { useEffect, useState } from 'react'
 import { List, Card, Typography, Tag, Button } from 'antd'
 import { Link } from 'react-router-dom'
@@ -48,26 +47,24 @@ function MyCoursesPage() {
 
         {/* Contenu */}
         {!hasCourses ? (
-          <Card
-            bordered={false}
-            className="my-courses-empty-card"
-          >
-            <Title level={4}>Tu n&apos;es inscrit à aucun cours pour l&apos;instant</Title>
-            <Paragraph type="secondary">
-              Dès que tu t&apos;inscris à un cours, il apparaîtra ici pour un accès rapide.
+          <Card bordered={false} className="my-courses-empty-card">
+            <Title level={4} className="my-courses-empty-title">
+              Tu n&apos;es inscrit à aucun cours pour l&apos;instant
+            </Title>
+            <Paragraph type="secondary" className="my-courses-empty-text">
+              Dès que tu t&apos;inscris à un cours, il apparaîtra ici pour un
+              accès rapide.
             </Paragraph>
             <Button type="primary">
               <Link to="/courses">Voir le catalogue de cours</Link>
             </Button>
           </Card>
         ) : (
-          <Card
-            bordered={false}
-            className="my-courses-list-card"
-          >
+          <Card bordered={false} className="my-courses-list-card">
             <List
+              className="my-courses-list"
               grid={{
-                gutter: 24,
+                gutter: 16,
                 xs: 1,
                 sm: 1,
                 md: 2,
@@ -81,18 +78,15 @@ function MyCoursesPage() {
                 const thumbnail =
                   course.thumbnailUrl || course.imageUrl || null
 
-                // petite description courte
                 const rawDesc =
-                  course.shortDescription ||
-                  course.description ||
-                  ''
+                  course.shortDescription || course.description || ''
                 const shortDesc =
-                  rawDesc.length > 140
-                    ? `${rawDesc.slice(0, 140)}…`
+                  rawDesc.length > 200
+                    ? `${rawDesc.slice(0, 200)}…`
                     : rawDesc
 
                 return (
-                  <List.Item>
+                  <List.Item className="my-course-list-item">
                     <Card
                       hoverable
                       className="my-course-card"
@@ -136,10 +130,7 @@ function MyCoursesPage() {
                           )}
                         </div>
 
-                        <Title
-                          level={4}
-                          className="my-course-card-title"
-                        >
+                        <Title level={5} className="my-course-card-title">
                           <Link to={`/student/courses/${course._id}`}>
                             {course.title}
                           </Link>
@@ -151,7 +142,6 @@ function MyCoursesPage() {
                           </Paragraph>
                         )}
 
-                        {/* Progression si disponible */}
                         {typeof progress === 'number' && (
                           <div className="my-course-card-progress">
                             <div className="my-course-card-progress-bar">
@@ -165,7 +155,10 @@ function MyCoursesPage() {
                                 }}
                               />
                             </div>
-                            <Text type="secondary" className="my-course-card-progress-label">
+                            <Text
+                              type="secondary"
+                              className="my-course-card-progress-label"
+                            >
                               Progression : {progress}%
                             </Text>
                           </div>
