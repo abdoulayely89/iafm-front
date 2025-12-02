@@ -1,4 +1,4 @@
-/* ===== PAGE GLOBALE ===== */
+/* ===== CONTAINER GLOBAL ===== */
 
 .page-course-player {
     padding: 16px;
@@ -14,21 +14,27 @@
   .course-player-header {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 6px;
     margin-bottom: 16px;
   }
   
   .course-player-title {
-    margin-bottom: 4px !important;
+    margin-bottom: 0 !important;
     font-size: 22px !important;
+    line-height: 1.3;
+    word-break: break-word;
+    overflow-wrap: anywhere;
   }
   
   .course-player-description {
     font-size: 14px;
-    color: rgba(0, 0, 0, 0.65);
+    color: rgba(0, 0, 0, 0.7);
     max-width: 950px;
     line-height: 1.6;
-    white-space: pre-line; /* garde les retours à la ligne du texte */
+    margin-top: 4px;
+    white-space: pre-line;
+    word-break: break-word;
+    overflow-wrap: anywhere;
   }
   
   /* Desktop / tablette */
@@ -50,21 +56,22 @@
   
   .course-player-main-card {
     border-radius: 16px !important;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.03);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
     margin-bottom: 16px;
   }
   
-  /* Header de la leçon (module + titre + durée) */
+  /* Header de la leçon */
   
   .course-player-lesson-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     gap: 8px;
+    flex-wrap: wrap;
   }
   
   .course-player-lesson-module {
-    font-size: 12px;
+    font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 0.04em;
   }
@@ -72,23 +79,41 @@
   .course-player-lesson-title {
     display: block;
     font-size: 15px;
+    line-height: 1.4;
+    word-break: break-word;
+    overflow-wrap: anywhere;
   }
   
-  /* Wrapper vidéo */
+  /* ===== VIDÉO : GRAND, RESPONSIVE ===== */
   
   .course-player-video-wrapper {
     width: 100%;
-    margin-bottom: 16px;
+    margin: 12px 0 16px;
     border-radius: 12px;
     overflow: hidden;
     background: #000;
+    position: relative;
+    /* ratio 16/9 moderne */
+    aspect-ratio: 16 / 9;
   }
   
-  /* On essaie de gérer proprement <video> ou <iframe> rendus par VideoPlayer */
+  /* fallback au cas où aspect-ratio n'est pas supporté */
+  @supports not (aspect-ratio: 16 / 9) {
+    .course-player-video-wrapper {
+      padding-top: 56.25%; /* 16/9 */
+    }
+  
+    .course-player-video-wrapper > * {
+      position: absolute !important;
+      inset: 0;
+    }
+  }
+  
+  /* Vidéo / iframe rendus par VideoPlayer */
   .course-player-video-wrapper video,
   .course-player-video-wrapper iframe {
     width: 100%;
-    height: auto;
+    height: 100%;
     display: block;
   }
   
@@ -106,15 +131,17 @@
   .lesson-content-body {
     font-size: 14px;
     line-height: 1.6;
-    color: rgba(0, 0, 0, 0.8);
+    color: rgba(0, 0, 0, 0.85);
     white-space: pre-line;
+    word-break: break-word;
+    overflow-wrap: anywhere;
   }
   
   /* ===== RESSOURCES ===== */
   
   .lesson-resources-card {
     border-radius: 16px !important;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.02);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.03);
     margin-top: 12px;
     margin-bottom: 16px;
   }
@@ -133,6 +160,7 @@
     font-size: 14px;
     font-weight: 500;
     word-break: break-word;
+    overflow-wrap: anywhere;
   }
   
   .lesson-resource-actions {
@@ -145,7 +173,7 @@
   
   .lesson-quiz-card {
     border-radius: 16px !important;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.02);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.03);
     margin-top: 12px;
     margin-bottom: 24px;
   }
@@ -195,22 +223,20 @@
   .course-player-sidebar-card {
     border-radius: 16px !important;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.03);
-    max-height: 100%;
   }
   
-  /* on laisse LessonList gérer le détail, mais on sécurise le scroll si la liste est longue */
+  /* scroll si beaucoup de leçons */
   .course-player-sidebar-card .ant-card-body {
-    max-height: 600px;
+    max-height: 640px;
     overflow-y: auto;
   }
   
-  /* ===== MODAL DE PRÉVISUALISATION DES RESSOURCES ===== */
+  /* ===== MODAL RESSOURCE ===== */
   
   .resource-preview-modal .ant-modal-content {
     border-radius: 16px;
   }
   
-  /* wrapper de l’iframe */
   .resource-preview-frame-wrapper {
     width: 100%;
     height: 70vh;
@@ -219,7 +245,6 @@
     background: #000;
   }
   
-  /* iframe PDF */
   .resource-preview-frame {
     width: 100%;
     height: 100%;
@@ -227,7 +252,7 @@
     display: block;
   }
   
-  /* ===== RESPONSIVE MOBILE ===== */
+  /* ===== MOBILE ===== */
   
   @media (max-width: 767.98px) {
     .page-course-player {
@@ -245,10 +270,6 @@
     .course-player-lesson-header {
       flex-direction: column;
       align-items: flex-start;
-    }
-  
-    .course-player-video-wrapper {
-      border-radius: 10px;
     }
   
     .course-player-title {
