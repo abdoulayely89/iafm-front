@@ -1,3 +1,4 @@
+// src/layouts/public/SidebarMenu.jsx
 import React from 'react'
 import { Layout, Menu } from 'antd'
 import {
@@ -22,14 +23,32 @@ function SidebarMenu({ collapsed, setCollapsed, admin = false }) {
   let items = []
 
   if (!admin) {
+    // ✅ Menu STUDENT
     items = [
-      { key: `${baseKey}`, icon: <DashboardOutlined />, label: <Link to={baseKey}>Tableau de bord</Link> },
-      { key: `${baseKey}/my-courses`, icon: <BookOutlined />, label: <Link to={`${baseKey}/my-courses`}>Mes cours</Link> },
-      { key: `${baseKey}/profile`, icon: <FileTextOutlined />, label: <Link to={`${baseKey}/profile`}>Profil</Link> },
+      {
+        key: `${baseKey}`,
+        icon: <DashboardOutlined />,
+        label: <Link to={baseKey}>Tableau de bord</Link>,
+      },
+      {
+        key: `${baseKey}/my-courses`,
+        icon: <BookOutlined />,
+        label: <Link to={`${baseKey}/my-courses`}>Mes cours</Link>,
+      },
+      {
+        key: `${baseKey}/profile`,
+        icon: <FileTextOutlined />,
+        label: <Link to={`${baseKey}/profile`}>Profil</Link>,
+      },
     ]
   } else {
+    // ✅ Menu ADMIN
     items = [
-      { key: `${baseKey}`, icon: <DashboardOutlined />, label: <Link to={baseKey}>Dashboard</Link> },
+      {
+        key: `${baseKey}`,
+        icon: <DashboardOutlined />,
+        label: <Link to={baseKey}>Dashboard</Link>,
+      },
       {
         key: `${baseKey}/cms/pages`,
         icon: <FileTextOutlined />,
@@ -63,9 +82,12 @@ function SidebarMenu({ collapsed, setCollapsed, admin = false }) {
     ]
   }
 
-  // Only show for authenticated
+  // Si pas connecté, pas de sidebar
   if (!user) return null
 
+  // 📌 Important : breakpoint + collapsedWidth
+  // - admin : garde un mini sidebar (80px) sur petit écran
+  // - student : sidebar disparaît complètement en dessous de "lg"
   return (
     <Sider
       collapsible
@@ -73,6 +95,8 @@ function SidebarMenu({ collapsed, setCollapsed, admin = false }) {
       onCollapse={(value) => setCollapsed(value)}
       className="app-sider"
       width={230}
+      breakpoint="lg"
+      collapsedWidth={admin ? 80 : 0}
     >
       <div className="app-sider-logo">
         <span className="app-logo-mark">IA</span>

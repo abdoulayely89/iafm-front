@@ -14,7 +14,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { UserOutlined, MenuOutlined } from '@ant-design/icons'
 import api from '../../services/api'
 import { useAuth } from '../../context/AuthContext'
-import iafmLogo from '../../assets/iafm-logo.png' // <-- ton logo
+import iafmLogo from '../../assets/iafm-logo.png'
 
 const { Header } = Layout
 const { Text } = Typography
@@ -45,13 +45,46 @@ function AppHeader({ dashboard = false }) {
     }
   }, [dashboard])
 
+  const role = user?.role
+
+  // 👇 Liens spécifiques à l'étudiant (affichés dans le burger)
+  const studentNavItems = !dashboard && role === 'student'
+    ? [
+        {
+          key: '/student',
+          label: <Link to="/student">Mon tableau de bord</Link>,
+        },
+        {
+          key: '/student/my-courses',
+          label: <Link to="/student/my-courses">Mes cours</Link>,
+        },
+        {
+          key: '/student/profile',
+          label: <Link to="/student/profile">Mon profil</Link>,
+        },
+      ]
+    : []
+
+  // 👇 Optionnel : liens admin dans le burger (pratique en mobile)
+  const adminNavItems =
+    !dashboard && (role === 'admin' || role === 'superadmin')
+      ? [
+          {
+            key: '/admin',
+            label: <Link to="/admin">Dashboard admin</Link>,
+          },
+        ]
+      : []
+
   const navItems = useMemo(
     () => [
       { key: '/', label: <Link to="/">Accueil</Link> },
       { key: '/courses', label: <Link to="/courses">Formations</Link> },
       ...menuItems,
+      ...studentNavItems,
+      ...adminNavItems,
     ],
-    [menuItems]
+    [menuItems, studentNavItems, adminNavItems]
   )
 
   const selectedKeys = useMemo(() => {
@@ -76,7 +109,7 @@ function AppHeader({ dashboard = false }) {
         label: (
           <Link
             to={
-              user?.role === 'admin' || user?.role === 'superadmin'
+              role === 'admin' || role === 'superadmin'
                 ? '/admin'
                 : '/student/profile'
             }
@@ -102,7 +135,7 @@ function AppHeader({ dashboard = false }) {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          height: 72, // 👈 un peu plus haut pour le logo
+          height: 72,
         }}
       >
         {/* GAUCHE : logo + burger */}
@@ -115,7 +148,6 @@ function AppHeader({ dashboard = false }) {
             flex: 1,
           }}
         >
-          {/* LOGO PLUS GRAND ET LISIBLE */}
           <Link
             to="/"
             className="app-logo"
@@ -130,7 +162,7 @@ function AppHeader({ dashboard = false }) {
               src={iafmLogo}
               alt="IAFM"
               style={{
-                height: 55,      // 👈 taille du logo (tu peux baisser à 36 si besoin)
+                height: 48,
                 width: 'auto',
                 display: 'block',
               }}
@@ -138,7 +170,7 @@ function AppHeader({ dashboard = false }) {
             <span
               style={{
                 fontWeight: 700,
-                fontSize: 28,   // 👈 texte plus visible
+                fontSize: 24,
                 color: '#fff',
                 letterSpacing: 0.6,
               }}
@@ -147,7 +179,6 @@ function AppHeader({ dashboard = false }) {
             </span>
           </Link>
 
-          {/* Bouton burger (mobile) */}
           {!dashboard && (
             <Button
               type="text"
