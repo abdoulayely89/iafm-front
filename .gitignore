@@ -1,0 +1,18 @@
+# Dépendances
+node_modules/
+
+# Build
+dist/
+dist-ssr/
+*.log
+
+# Environnement
+.env
+.env.local
+.env.*.local
+
+# MacOS
+.DS_Store
+
+# Vite
+.vite/

@@ -1,0 +1,161 @@
+/* ===========================
+   PAGE ADMIN LIVRES
+   =========================== */
+
+   .admin-books-page {
+    padding: 16px 0 32px;
+  }
+  
+  /* ===========================
+     HERO / HEADER
+     =========================== */
+  
+  .admin-books-hero {
+    border-radius: 18px !important;
+    margin-bottom: 16px;
+    background: radial-gradient(circle at top left, #e6f4ff 0%, #ffffff 45%, #fff7e6 100%);
+    box-shadow: 0 12px 28px rgba(15, 35, 52, 0.18);
+  }
+  
+  .admin-books-hero-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 20px rgba(15, 35, 52, 0.18);
+    font-size: 22px;
+    color: #722ed1;
+  }
+  
+  .admin-books-new-btn {
+    border-radius: 999px;
+    padding-inline: 20px !important;
+  }
+  
+  /* ===========================
+     STATS
+     =========================== */
+  
+  .admin-books-stats-row {
+    margin-top: 16px;
+    margin-bottom: 16px;
+  }
+  
+  .admin-books-stat-card {
+    border-radius: 14px !important;
+    box-shadow: 0 6px 18px rgba(15, 35, 52, 0.06);
+  }
+  
+  .admin-books-stat-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #8c8c8c;
+  }
+  
+  .admin-books-stat-value {
+    font-size: 22px;
+    font-weight: 700;
+    margin-top: 4px;
+    margin-bottom: 2px;
+  }
+  
+  .admin-books-stat-sub {
+    font-size: 11px;
+  }
+  
+  /* ===========================
+     TABLE
+     =========================== */
+  
+  .admin-books-table-card {
+    border-radius: 18px !important;
+    box-shadow: 0 6px 20px rgba(15, 35, 52, 0.08);
+    overflow: hidden;
+  }
+  
+  /* Titre colonne */
+  .admin-books-title-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    background: #e6f7ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #1890ff;
+    font-size: 16px;
+  }
+  
+  .admin-books-title-cell {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .admin-books-title-link {
+    font-weight: 600;
+    color: #1f2933;
+  }
+  
+  .admin-books-title-link:hover {
+    color: #1890ff;
+  }
+  
+  .admin-books-title-meta {
+    margin-top: 2px;
+  }
+  
+  /* Slug tag plus compact */
+  .admin-books-slug-tag {
+    font-size: 11px;
+    border-radius: 999px;
+  }
+  
+  /* Table */
+  .admin-books-table .ant-table-thead > tr > th {
+    background: #fafafa;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  
+  .admin-books-table .ant-table-tbody > tr:hover > td {
+    background: #f5f7ff;
+  }
+  
+  /* ===========================
+     RESPONSIVE
+     =========================== */
+  
+  @media (max-width: 767px) {
+    .admin-books-hero {
+      margin-bottom: 12px;
+    }
+  
+    .admin-books-new-btn {
+      width: 100%;
+      text-align: center;
+    }
+  
+    .admin-books-stat-card {
+      text-align: center;
+    }
+  
+    .admin-books-title-cell {
+      max-width: 190px;
+    }
+  }
+  
+  @media (max-width: 575px) {
+    .admin-books-page {
+      padding: 8px 0 24px;
+    }
+  
+    .admin-books-table-card {
+      border-radius: 12px !important;
+    }
+  }
+  

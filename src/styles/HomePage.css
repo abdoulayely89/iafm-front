@@ -1,0 +1,81 @@
+.page-home {
+    padding: 32px 0 64px;
+  }
+  
+  /* HERO PRINCIPAL */
+  
+  .hero-section-main {
+    padding: 40px 24px 56px;
+    border-radius: 24px;
+    background: radial-gradient(circle at top left, #e6f4ff, #ffffff);
+    margin-bottom: 40px;
+  }
+  
+  .hero-main-text .hero-title {
+    font-size: 32px;
+    line-height: 1.2;
+  }
+  
+  .hero-main-text .hero-subtitle {
+    font-size: 16px;
+    max-width: 580px;
+  }
+  
+  .hero-stats .hero-stat-item {
+    max-width: 260px;
+  }
+  
+  .hero-visual .hero-card {
+    border-radius: 20px;
+    box-shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
+  }
+  
+  /* SECTION PAGES CMS */
+  
+  .cms-pages-section {
+    margin-top: 24px;
+    margin-bottom: 40px;
+  }
+  
+  .cms-page-card {
+    border-radius: 18px !important;
+    overflow: hidden;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .cms-page-card-cover {
+    height: 180px;
+    overflow: hidden;
+  }
+  
+  .cms-page-card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.35s ease;
+  }
+  
+  .cms-page-card:hover .cms-page-card-image {
+    transform: scale(1.05);
+  }
+  
+  .cms-page-card-body {
+    padding: 16px 16px 8px;
+  }
+  
+  .cms-page-tag {
+    margin-bottom: 8px;
+  }
+  
+  .cms-page-card-footer {
+    margin-top: 12px;
+  }
+  
+  /* SECTION FORMATIONS */
+  
+  .featured-courses-section {
+    margin-top: 24px;
+  }
+  

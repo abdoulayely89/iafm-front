@@ -1,0 +1,172 @@
+/* ===========================
+   PAGE ADMIN COURS
+   =========================== */
+
+   .admin-courses-page {
+    padding: 16px 0 32px;
+  }
+  
+  /* ===========================
+     HERO / HEADER
+     =========================== */
+  
+  .admin-courses-hero {
+    border-radius: 18px !important;
+    margin-bottom: 16px;
+    background: radial-gradient(circle at top left, #e6f4ff 0%, #ffffff 45%, #f6ffed 100%);
+    box-shadow: 0 12px 28px rgba(15, 35, 52, 0.18);
+  }
+  
+  .admin-courses-hero-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 20px rgba(15, 35, 52, 0.18);
+    font-size: 22px;
+    color: #1890ff;
+  }
+  
+  .admin-courses-new-btn {
+    border-radius: 999px;
+    padding-inline: 20px !important;
+  }
+  
+  /* ===========================
+     STATS
+     =========================== */
+  
+  .admin-courses-stats-row {
+    margin-top: 16px;
+    margin-bottom: 16px;
+  }
+  
+  .admin-courses-stat-card {
+    border-radius: 14px !important;
+    box-shadow: 0 6px 18px rgba(15, 35, 52, 0.06);
+  }
+  
+  .admin-courses-stat-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #8c8c8c;
+  }
+  
+  .admin-courses-stat-value {
+    font-size: 22px;
+    font-weight: 700;
+    margin-top: 2px;
+    margin-bottom: 2px;
+  }
+  
+  .admin-courses-stat-sub {
+    font-size: 11px;
+  }
+  
+  /* ===========================
+     TABLE
+     =========================== */
+  
+  .admin-courses-table-card {
+    border-radius: 18px !important;
+    box-shadow: 0 6px 20px rgba(15, 35, 52, 0.08);
+    overflow: hidden;
+  }
+  
+  .admin-courses-table .ant-table-thead > tr > th {
+    background: #fafafa;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  
+  .admin-courses-table .ant-table-tbody > tr:hover > td {
+    background: #f5f7ff;
+  }
+  
+  /* Colonne titre */
+  
+  .admin-courses-title-wrapper {
+    display: flex;
+    align-items: flex-start;
+  }
+  
+  .admin-courses-title-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    background: #e6f7ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #1890ff;
+    font-size: 16px;
+  }
+  
+  .admin-courses-title-text {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .admin-courses-title-link {
+    font-weight: 600;
+    color: #1f2933;
+  }
+  
+  .admin-courses-title-link:hover {
+    color: #1890ff;
+  }
+  
+  .admin-courses-title-meta {
+    margin-top: 2px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  
+  .admin-courses-slug-tag {
+    font-size: 11px;
+    border-radius: 999px;
+  }
+  
+  .admin-courses-small-tag {
+    font-size: 11px;
+  }
+  
+  /* ===========================
+     RESPONSIVE
+     =========================== */
+  
+  @media (max-width: 767px) {
+    .admin-courses-hero {
+      margin-bottom: 12px;
+    }
+  
+    .admin-courses-new-btn {
+      width: 100%;
+      text-align: center;
+    }
+  
+    .admin-courses-stat-card {
+      text-align: center;
+    }
+  
+    .admin-courses-title-text {
+      max-width: 200px;
+    }
+  }
+  
+  @media (max-width: 575px) {
+    .admin-courses-page {
+      padding: 8px 0 24px;
+    }
+  
+    .admin-courses-table-card {
+      border-radius: 12px !important;
+    }
+  }
+  

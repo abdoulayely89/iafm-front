@@ -1,0 +1,241 @@
+/* ===========================
+   PAGE GLOBALE
+   =========================== */
+
+   .page.page-home {
+    padding: 32px 0 48px;
+    background: #f7f9fc;
+  }
+  
+  /* Pour laisser Ant gérer la largeur via le layout,
+     on évite de fixer un max-width ici.
+  */
+  .page-home .page-section {
+    margin: 40px 0;
+  }
+  
+  /* ===========================
+     HERO PRINCIPAL
+     =========================== */
+  
+  .hero-section.hero-section-main {
+    padding: 32px 24px 40px;
+    border-radius: 24px;
+    background: radial-gradient(circle at top left, #e6f4ff 0%, #ffffff 45%, #fff7e6 100%);
+    box-shadow: 0 14px 40px rgba(15, 35, 52, 0.10);
+    margin-bottom: 32px;
+  }
+  
+  .hero-main-text {
+    max-width: 620px;
+  }
+  
+  .hero-title {
+    font-weight: 800 !important;
+    letter-spacing: 0.01em;
+  }
+  
+  .hero-subtitle {
+    font-size: 16px;
+    color: #576076;
+  }
+  
+  .hero-stats {
+    margin-top: 24px;
+  }
+  
+  .hero-stat-item {
+    max-width: 260px;
+  }
+  
+  .hero-stat-item p {
+    margin-bottom: 0;
+  }
+  
+  /* Visuel à droite */
+  
+  .hero-visual {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .hero-card {
+    width: 100%;
+    max-width: 360px;
+    border-radius: 20px !important;
+    box-shadow: 0 16px 40px rgba(15, 35, 52, 0.18);
+  }
+  
+  .hero-card .ant-card-body {
+    padding: 24px 22px;
+  }
+  
+  .hero-card-highlight {
+    margin-top: 16px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: rgba(24, 144, 255, 0.07);
+    border: 1px solid rgba(24, 144, 255, 0.18);
+  }
+  
+  /* ===========================
+     BLOCS CMS HOME
+     =========================== */
+  
+  .cms-section-wrapper {
+    margin-top: 40px;
+    margin-bottom: 16px;
+  }
+  
+  /* ===========================
+     PAGES CMS (A propos, etc.)
+     =========================== */
+  
+  .cms-pages-section {
+    margin-top: 16px;
+  }
+  
+  .cms-page-card {
+    height: 100%;
+    border-radius: 18px !important;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #f0f0f5;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+  }
+  
+  .cms-page-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgba(15, 35, 52, 0.16);
+    border-color: #d6e4ff;
+  }
+  
+  .cms-page-card-cover {
+    width: 100%;
+    height: 180px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #f0f5ff 0%, #fff1f0 50%, #fffbe6 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .cms-page-card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .cms-page-card-body {
+    padding: 14px 16px 12px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  
+  .cms-page-tag {
+    margin-bottom: 4px;
+  }
+  
+  .cms-page-card-footer {
+    margin-top: auto;
+    padding-top: 8px;
+    border-top: 1px solid #f0f0f0;
+  }
+  
+  /* ===========================
+     SECTIONS TITRÉES
+     =========================== */
+  
+  .featured-courses-section,
+  .featured-books-section {
+    padding: 24px 24px 28px;
+    border-radius: 22px;
+    background: #ffffff;
+    box-shadow: 0 10px 26px rgba(15, 35, 52, 0.08);
+  }
+  
+  /* Pour bien distinguer les deux blocs */
+  .featured-courses-section {
+    border-left: 4px solid #1890ff;
+  }
+  
+  .featured-books-section {
+    border-left: 4px solid #722ed1;
+  }
+  
+  /* ===========================
+     FORMATIONS (CourseGrid)
+     =========================== */
+  
+  /* Si tu veux légèrement resserrer les cartes de formations,
+     tu peux cibler ce conteneur si CourseGrid a une classe.
+     Exemple (à adapter si ton CourseGrid a une className spécifique) : */
+  
+  .featured-courses-section .course-grid {
+    margin-top: 12px;
+  }
+  
+  /* ===========================
+     LIVRES & PACKS PDF
+     =========================== */
+  
+  .book-card {
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    border: 1px solid #f0f0f5;
+  }
+  
+  .book-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 18px 36px rgba(15, 35, 52, 0.18);
+    border-color: #d3adf7;
+  }
+  
+  /* ===========================
+     RESPONSIVE / MOBILE
+     =========================== */
+  
+  @media (max-width: 991px) {
+    .hero-section.hero-section-main {
+      padding: 24px 16px 28px;
+      border-radius: 16px;
+    }
+  
+    .hero-main-text {
+      text-align: left;
+    }
+  
+    .hero-stats {
+      flex-direction: column;
+    }
+  
+    .hero-stat-item {
+      max-width: 100%;
+    }
+  
+    .featured-courses-section,
+    .featured-books-section {
+      padding: 18px 16px 22px;
+    }
+  }
+  
+  @media (max-width: 575px) {
+    .page.page-home {
+      padding: 16px 0 32px;
+    }
+  
+    .hero-title {
+      font-size: 24px !important;
+    }
+  
+    .hero-subtitle {
+      font-size: 14px;
+    }
+  
+    .cms-page-card-cover {
+      height: 150px;
+    }
+  }
+  
