@@ -1,6 +1,8 @@
-/* ===== CONTAINER GLOBAL ===== */
+/* ========================
+   WRAPPER GLOBAL
+   ======================== */
 
-.page-course-player {
+   .page-course-player {
     padding: 16px;
   }
   
@@ -9,7 +11,9 @@
     margin: 0 auto;
   }
   
-  /* ===== HEADER COURS ===== */
+  /* ========================
+     HEADER (titre + desc)
+     ======================== */
   
   .course-player-header {
     display: flex;
@@ -20,7 +24,7 @@
   
   .course-player-title {
     margin-bottom: 0 !important;
-    font-size: 22px !important;
+    font-size: 24px !important;
     line-height: 1.3;
     word-break: break-word;
     overflow-wrap: anywhere;
@@ -37,22 +41,9 @@
     overflow-wrap: anywhere;
   }
   
-  /* Desktop / tablette */
-  @media (min-width: 768px) {
-    .page-course-player {
-      padding: 24px 32px;
-    }
-  
-    .course-player-title {
-      font-size: 26px !important;
-    }
-  
-    .course-player-description {
-      font-size: 15px;
-    }
-  }
-  
-  /* ===== CARTE PRINCIPALE : LEÇON ===== */
+  /* ========================
+     CARTE PRINCIPALE LEÇON
+     ======================== */
   
   .course-player-main-card {
     border-radius: 16px !important;
@@ -60,7 +51,7 @@
     margin-bottom: 16px;
   }
   
-  /* Header de la leçon */
+  /* Header leçon (module + titre + durée) */
   
   .course-player-lesson-header {
     display: flex;
@@ -84,7 +75,9 @@
     overflow-wrap: anywhere;
   }
   
-  /* ===== VIDÉO : GRAND, RESPONSIVE ===== */
+  /* ========================
+     VIDÉO – LARGE ET RESPONSIVE
+     ======================== */
   
   .course-player-video-wrapper {
     width: 100%;
@@ -93,14 +86,12 @@
     overflow: hidden;
     background: #000;
     position: relative;
-    /* ratio 16/9 moderne */
     aspect-ratio: 16 / 9;
   }
   
-  /* fallback au cas où aspect-ratio n'est pas supporté */
   @supports not (aspect-ratio: 16 / 9) {
     .course-player-video-wrapper {
-      padding-top: 56.25%; /* 16/9 */
+      padding-top: 56.25%; /* fallback 16:9 */
     }
   
     .course-player-video-wrapper > * {
@@ -109,7 +100,6 @@
     }
   }
   
-  /* Vidéo / iframe rendus par VideoPlayer */
   .course-player-video-wrapper video,
   .course-player-video-wrapper iframe {
     width: 100%;
@@ -117,7 +107,9 @@
     display: block;
   }
   
-  /* ===== CONTENU DE LEÇON (NOTES) ===== */
+  /* ========================
+     CONTENU DE LEÇON (NOTES)
+     ======================== */
   
   .lesson-content {
     margin-top: 8px;
@@ -137,7 +129,9 @@
     overflow-wrap: anywhere;
   }
   
-  /* ===== RESSOURCES ===== */
+  /* ========================
+     RESSOURCES
+     ======================== */
   
   .lesson-resources-card {
     border-radius: 16px !important;
@@ -169,7 +163,9 @@
     gap: 4px;
   }
   
-  /* ===== QUIZ ===== */
+  /* ========================
+     QUIZ
+     ======================== */
   
   .lesson-quiz-card {
     border-radius: 16px !important;
@@ -218,20 +214,24 @@
     margin-top: 8px;
   }
   
-  /* ===== SIDEBAR : PLAN DU COURS ===== */
+  /* ========================
+     SIDEBAR PLAN DU COURS
+     ======================== */
   
   .course-player-sidebar-card {
     border-radius: 16px !important;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.03);
   }
   
-  /* scroll si beaucoup de leçons */
+  /* scroll interne si beaucoup de leçons */
   .course-player-sidebar-card .ant-card-body {
     max-height: 640px;
     overflow-y: auto;
   }
   
-  /* ===== MODAL RESSOURCE ===== */
+  /* ========================
+     MODAL RESSOURCE
+     ======================== */
   
   .resource-preview-modal .ant-modal-content {
     border-radius: 16px;
@@ -252,11 +252,46 @@
     display: block;
   }
   
-  /* ===== MOBILE ===== */
+  /* ========================
+     BREAKPOINT TABLETTE & +
+     ======================== */
+  
+  @media (min-width: 768px) {
+    .page-course-player {
+      padding: 24px 32px;
+    }
+  
+    .course-player-title {
+      font-size: 26px !important;
+    }
+  
+    .course-player-description {
+      font-size: 15px;
+    }
+  }
+  
+  /* ========================
+     MOBILE PORTRAIT (<768px)
+     ======================== */
   
   @media (max-width: 767.98px) {
     .page-course-player {
-      padding: 16px 12px;
+      padding: 12px 8px;
+    }
+  
+    .course-player-container {
+      max-width: 100%;
+    }
+  
+    .course-player-title {
+      font-size: 20px !important;
+    }
+  
+    .course-player-description {
+      font-size: 13px;
+      line-height: 1.5;
+      max-height: 7.2em;       /* ~4-5 lignes max */
+      overflow: hidden;
     }
   
     .course-player-main-card,
@@ -267,17 +302,41 @@
       border-radius: 12px !important;
     }
   
+    /* on évite tout débordement horizontal */
+    .course-player-main-card .ant-card-body,
+    .lesson-resources-card .ant-card-body,
+    .lesson-quiz-card .ant-card-body {
+      padding: 12px;
+    }
+  
     .course-player-lesson-header {
       flex-direction: column;
       align-items: flex-start;
     }
   
-    .course-player-title {
-      font-size: 20px !important;
+    .course-player-lesson-title {
+      font-size: 14px;
     }
   
     .lesson-content-body {
       font-size: 13px;
+    }
+  
+    /* le Row / Col d’Ant peut parfois forcer un scroll horizontal :
+       on oblige les colonnes à prendre toute la largeur */
+    .course-player-container .ant-row {
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+    }
+  
+    .course-player-container .ant-col {
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+    }
+  
+    /* Sidebar (plan du cours) passe en dessous, full width */
+    .course-player-sidebar-card .ant-card-body {
+      max-height: none;
     }
   
     .resource-preview-frame-wrapper {
