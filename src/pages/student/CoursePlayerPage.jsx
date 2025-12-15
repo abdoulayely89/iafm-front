@@ -12,6 +12,7 @@ import {
   Tag,
   Empty,
   Radio,
+  Checkbox,
   Button,
   Divider,
   Modal,
@@ -462,10 +463,11 @@ function CoursePlayerPage() {
     setCurrentLesson(lesson)
   }
 
-  const handleChangeAnswer = (questionIndex, optionIndex) => {
+  // Accepte soit un index (single), soit un tableau d’indices (multiple)
+  const handleChangeAnswer = (questionIndex, value) => {
     setQuizAnswers((prev) => ({
       ...prev,
-      [questionIndex]: optionIndex,
+      [questionIndex]: value,
     }))
   }
 
@@ -473,24 +475,52 @@ function CoursePlayerPage() {
     if (!quiz || !quiz.questions || quiz.questions.length === 0) return
 
     let correctCount = 0
+    let gradableCount = 0 // on exclut les questions "text"
 
     quiz.questions.forEach((q, questionIndex) => {
-      const selectedIndex = quizAnswers[questionIndex]
       const options = q.options || []
-      const correctIndex = options.findIndex(
-        (opt) => opt && opt.isCorrect
-      )
 
-      if (
-        typeof selectedIndex === 'number' &&
-        correctIndex >= 0 &&
-        selectedIndex === correctIndex
-      ) {
-        correctCount++
+      // On ne note pas les questions ouvertes
+      if (q.type === 'text' || !options.length) {
+        return
+      }
+
+      gradableCount++
+
+      const answer = quizAnswers[questionIndex]
+
+      if (q.type === 'multiple') {
+        // Cas multiple : toutes les bonnes, aucune mauvaise
+        const correctIndices = options
+          .map((opt, idx) => (opt && opt.isCorrect ? idx : null))
+          .filter((idx) => idx !== null)
+
+        const selected = Array.isArray(answer) ? answer : []
+
+        const isCorrect =
+          selected.length === correctIndices.length &&
+          correctIndices.every((idx) => selected.includes(idx))
+
+        if (isCorrect) {
+          correctCount++
+        }
+      } else {
+        // Cas single (ou type non défini)
+        const correctIndex = options.findIndex(
+          (opt) => opt && opt.isCorrect
+        )
+
+        if (
+          typeof answer === 'number' &&
+          correctIndex >= 0 &&
+          answer === correctIndex
+        ) {
+          correctCount++
+        }
       }
     })
 
-    const total = quiz.questions.length
+    const total = gradableCount || 1
     const score = Math.round((correctCount / total) * 100)
     setQuizScore(score)
     setQuizSubmitted(true)
@@ -711,53 +741,120 @@ function CoursePlayerPage() {
                           </Text>
 
                           <div className="lesson-quiz-options">
-                            <Radio.Group
-                              onChange={(e) =>
-                                handleChangeAnswer(
-                                  questionIndex,
-                                  e.target.value
-                                )
-                              }
-                              value={quizAnswers[questionIndex]}
-                            >
-                              <Space direction="vertical">
-                                {(q.options || []).map((opt, idx) => (
-                                  <Radio key={idx} value={idx}>
-                                    {opt?.label ||
-                                      opt?.text ||
-                                      getOptionTextForQuiz(
-                                        quiz,
-                                        questionIndex,
-                                        idx
-                                      )}
-                                  </Radio>
-                                ))}
-                              </Space>
-                            </Radio.Group>
+                            {q.type === 'multiple' ? (
+                              <Checkbox.Group
+                                onChange={(values) =>
+                                  handleChangeAnswer(
+                                    questionIndex,
+                                    values
+                                  )
+                                }
+                                value={quizAnswers[questionIndex] || []}
+                              >
+                                <Space direction="vertical">
+                                  {(q.options || []).map((opt, idx) => (
+                                    <Checkbox key={idx} value={idx}>
+                                      {opt?.label ||
+                                        opt?.text ||
+                                        getOptionTextForQuiz(
+                                          quiz,
+                                          questionIndex,
+                                          idx
+                                        )}
+                                    </Checkbox>
+                                  ))}
+                                </Space>
+                              </Checkbox.Group>
+                            ) : q.type === 'text' ? (
+                              <Paragraph type="secondary">
+                                Question ouverte : répondez dans votre
+                                cahier ou avec votre coach.
+                              </Paragraph>
+                            ) : (
+                              <Radio.Group
+                                onChange={(e) =>
+                                  handleChangeAnswer(
+                                    questionIndex,
+                                    e.target.value
+                                  )
+                                }
+                                value={quizAnswers[questionIndex]}
+                              >
+                                <Space direction="vertical">
+                                  {(q.options || []).map((opt, idx) => (
+                                    <Radio key={idx} value={idx}>
+                                      {opt?.label ||
+                                        opt?.text ||
+                                        getOptionTextForQuiz(
+                                          quiz,
+                                          questionIndex,
+                                          idx
+                                        )}
+                                    </Radio>
+                                  ))}
+                                </Space>
+                              </Radio.Group>
+                            )}
                           </div>
 
                           {quizSubmitted && (
                             <div className="lesson-quiz-feedback">
                               {(() => {
                                 const options = q.options || []
-                                const correctIndex =
-                                  options.findIndex(
-                                    (opt) => opt && opt.isCorrect
+                                const answer = quizAnswers[questionIndex]
+
+                                if (q.type === 'text') {
+                                  return (
+                                    <Tag color="blue">
+                                      Question ouverte (non notée)
+                                    </Tag>
                                   )
-                                const selectedIndex =
-                                  quizAnswers[questionIndex]
+                                }
+
+                                if (!options.length) return null
+
+                                if (q.type === 'multiple') {
+                                  const correctIndices = options
+                                    .map((opt, idx) =>
+                                      opt && opt.isCorrect ? idx : null
+                                    )
+                                    .filter((idx) => idx !== null)
+
+                                  const selected = Array.isArray(answer)
+                                    ? answer
+                                    : []
+
+                                  const isCorrect =
+                                    selected.length === correctIndices.length &&
+                                    correctIndices.every((idx) =>
+                                      selected.includes(idx)
+                                    )
+
+                                  return isCorrect ? (
+                                    <Tag color="green">
+                                      Toutes les bonnes réponses sélectionnées
+                                    </Tag>
+                                  ) : (
+                                    <Tag color="red">
+                                      Réponse incorrecte
+                                    </Tag>
+                                  )
+                                }
+
+                                // Par défaut : single
+                                const correctIndex = options.findIndex(
+                                  (opt) => opt && opt.isCorrect
+                                )
+                                const selectedIndex = answer
                                 const isCorrect =
+                                  typeof selectedIndex === 'number' &&
                                   correctIndex >= 0 &&
                                   selectedIndex === correctIndex
 
                                 return isCorrect ? (
-                                  <Tag color="green">
-                                    Bonne réponse
-                                  </Tag>
+                                  <Tag color="green">Bonne réponse</Tag>
                                 ) : (
-                                  <Tag color="red">
-                                    Mauvaise réponse
-                                  </Tag>
+                                  <Tag color="red">Mauvaise réponse</Tag>
                                 )
                               })()}
 

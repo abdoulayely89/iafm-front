@@ -14,6 +14,7 @@ import {
   Divider,
   Upload,
   List,
+  Select,
 } from 'antd'
 import {
   SaveOutlined,
@@ -26,6 +27,7 @@ import PageLoader from '../../../components/common/PageLoader'
 
 const { Title, Text } = Typography
 const { TextArea } = Input
+const { Option } = Select
 
 function BookEditPage() {
   const { id } = useParams()
@@ -41,8 +43,8 @@ function BookEditPage() {
   const [fileList, setFileList] = useState([]) // pour l'Upload des PDF
 
   // Couverture
-  const [coverUrl, setCoverUrl] = useState(null)          // URL finale stockée dans le livre
-  const [coverFileList, setCoverFileList] = useState([])  // fileList pour Upload image
+  const [coverUrl, setCoverUrl] = useState(null) // URL finale stockée dans le livre
+  const [coverFileList, setCoverFileList] = useState([]) // fileList pour Upload image
 
   useEffect(() => {
     if (!isNew) {
@@ -59,6 +61,7 @@ function BookEditPage() {
             price: book.price,
             isPublic: book.isPublic,
             isFeatured: book.isFeatured,
+            status: book.status || 'draft',
           })
 
           // Couverture existante
@@ -108,6 +111,7 @@ function BookEditPage() {
       form.setFieldsValue({
         isPublic: true,
         isFeatured: false,
+        status: 'published', // ✅ défaut recommandé
       })
       setAttachedFiles([])
       setFileList([])
@@ -132,6 +136,7 @@ function BookEditPage() {
         price: values.price || 0,
         isPublic: !!values.isPublic,
         isFeatured: !!values.isFeatured,
+        status: values.status || 'draft',
         coverUrl: coverUrl || null, // 👈 vient de l’upload d’image
         files: attachedFiles,
       }
@@ -166,11 +171,7 @@ function BookEditPage() {
         headers: { 'Content-Type': 'multipart/form-data' },
       })
 
-      const url =
-        data?.file?.url ||
-        data?.url ||
-        data?.fileUrl ||
-        data?.location
+      const url = data?.file?.url || data?.url || data?.fileUrl || data?.location
 
       if (!url) {
         throw new Error("Réponse d'upload invalide (pas d'URL).")
@@ -200,8 +201,7 @@ function BookEditPage() {
     if (file.status === 'removed') {
       setAttachedFiles((prev) =>
         prev.filter(
-          (f) =>
-            !(f.label === file.name || (file.url && f.fileUrl === file.url))
+          (f) => !(f.label === file.name || (file.url && f.fileUrl === file.url))
         )
       )
     }
@@ -209,22 +209,10 @@ function BookEditPage() {
 
   const handleRemoveAttachedFile = (fileUrlOrLabel) => {
     setAttachedFiles((prev) =>
-      prev.filter(
-        (f) =>
-          !(
-            f.fileUrl === fileUrlOrLabel ||
-            f.label === fileUrlOrLabel
-          )
-      )
+      prev.filter((f) => !(f.fileUrl === fileUrlOrLabel || f.label === fileUrlOrLabel))
     )
     setFileList((prev) =>
-      prev.filter(
-        (fl) =>
-          !(
-            fl.url === fileUrlOrLabel ||
-            fl.name === fileUrlOrLabel
-          )
-      )
+      prev.filter((fl) => !(fl.url === fileUrlOrLabel || fl.name === fileUrlOrLabel))
     )
   }
 
@@ -242,11 +230,7 @@ function BookEditPage() {
         headers: { 'Content-Type': 'multipart/form-data' },
       })
 
-      const url =
-        data?.file?.url ||
-        data?.url ||
-        data?.fileUrl ||
-        data?.location
+      const url = data?.file?.url || data?.url || data?.fileUrl || data?.location
 
       if (!url) {
         throw new Error("Réponse d'upload invalide (pas d'URL pour la couverture).")
@@ -301,10 +285,7 @@ function BookEditPage() {
         }}
       >
         <Space align="center">
-          <Button
-            icon={<ArrowLeftOutlined />}
-            onClick={() => navigate('/admin/books')}
-          >
+          <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/admin/books')}>
             Retour
           </Button>
           <div>
@@ -312,7 +293,7 @@ function BookEditPage() {
               {isNew ? 'Nouveau pack PDF' : 'Éditer le pack PDF'}
             </Title>
             <Text type="secondary">
-              Définis le titre, la couverture, la visibilité et les fichiers PDF associés.
+              Définis le titre, la couverture, la visibilité, le statut et les fichiers PDF associés.
             </Text>
           </div>
         </Space>
@@ -335,12 +316,7 @@ function BookEditPage() {
         }}
         bodyStyle={{ padding: 20 }}
       >
-        <Form
-          layout="vertical"
-          form={form}
-          onFinish={onFinish}
-          style={{ maxWidth: 900 }}
-        >
+        <Form layout="vertical" form={form} onFinish={onFinish} style={{ maxWidth: 900 }}>
           {/* Infos générales */}
           <Title level={4} style={{ marginTop: 0 }}>
             Informations générales
@@ -370,12 +346,20 @@ function BookEditPage() {
           </Form.Item>
 
           <Form.Item label="Prix (FCFA)" name="price">
-            <InputNumber
-              style={{ width: 200 }}
-              min={0}
-              step={1000}
-              placeholder="0 = Gratuit"
-            />
+            <InputNumber style={{ width: 200 }} min={0} step={1000} placeholder="0 = Gratuit" />
+          </Form.Item>
+
+          {/* Statut */}
+          <Form.Item
+            label="Statut"
+            name="status"
+            rules={[{ required: true, message: 'Statut requis.' }]}
+          >
+            <Select style={{ width: 260 }}>
+              <Option value="draft">Brouillon (draft)</Option>
+              <Option value="published">Publié (published)</Option>
+              <Option value="archived">Archivé (archived)</Option>
+            </Select>
           </Form.Item>
 
           {/* Couverture */}
@@ -406,24 +390,14 @@ function BookEditPage() {
           <Form.Item label="Visibilité">
             <Space direction="vertical">
               <Space>
-                <Form.Item
-                  name="isPublic"
-                  valuePropName="checked"
-                  noStyle
-                >
+                <Form.Item name="isPublic" valuePropName="checked" noStyle>
                   <Switch />
                 </Form.Item>
-                <Text type="secondary">
-                  Rendre le pack visible dans la liste publique.
-                </Text>
+                <Text type="secondary">Rendre le pack visible dans la liste publique.</Text>
               </Space>
 
               <Space>
-                <Form.Item
-                  name="isFeatured"
-                  valuePropName="checked"
-                  noStyle
-                >
+                <Form.Item name="isFeatured" valuePropName="checked" noStyle>
                   <Switch />
                 </Form.Item>
                 <Text type="secondary">
@@ -438,8 +412,8 @@ function BookEditPage() {
           {/* Fichiers PDF */}
           <Title level={4}>Fichiers PDF du pack</Title>
           <Text type="secondary">
-            Tu peux sélectionner plusieurs PDF en une seule fois. Ils seront
-            uploadés puis rattachés automatiquement à ce pack.
+            Tu peux sélectionner plusieurs PDF en une seule fois. Ils seront uploadés puis rattachés
+            automatiquement à ce pack.
           </Text>
 
           <div style={{ marginTop: 12, marginBottom: 12 }}>
@@ -451,9 +425,7 @@ function BookEditPage() {
               onChange={handleUploadChange}
               onRemove={() => true}
             >
-              <Button icon={<UploadOutlined />}>
-                Uploader un ou plusieurs PDF
-              </Button>
+              <Button icon={<UploadOutlined />}>Uploader un ou plusieurs PDF</Button>
             </Upload>
           </div>
 
@@ -480,11 +452,10 @@ function BookEditPage() {
                   <List.Item
                     actions={[
                       <Button
+                        key="remove"
                         size="small"
                         danger
-                        onClick={() =>
-                          handleRemoveAttachedFile(f.fileUrl || f.label)
-                        }
+                        onClick={() => handleRemoveAttachedFile(f.fileUrl || f.label)}
                       >
                         Retirer
                       </Button>,

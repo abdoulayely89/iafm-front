@@ -85,9 +85,38 @@ function SidebarMenu({ collapsed, setCollapsed, admin = false }) {
   // Si pas connecté, pas de sidebar
   if (!user) return null
 
-  // 📌 Important : breakpoint + collapsedWidth
-  // - admin : garde un mini sidebar (80px) sur petit écran
-  // - student : sidebar disparaît complètement en dessous de "lg"
+  // 🎨 Trigger flottant rond, moderne
+  const customTrigger = (
+    <div
+      onClick={() => setCollapsed(!collapsed)}
+      style={{
+        width: 42,
+        height: 42,
+        borderRadius: '50%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        cursor: 'pointer',
+        backgroundColor: '#1f1f1f',
+        color: '#fff',
+        fontSize: 18,
+        margin: '12px auto',
+        border: '1px solid rgba(255,255,255,0.2)',
+        transition: '0.25s',
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.backgroundColor = '#3a3a3a'
+        e.currentTarget.style.transform = 'scale(1.06)'
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.backgroundColor = '#1f1f1f'
+        e.currentTarget.style.transform = 'scale(1)'
+      }}
+    >
+      <MenuOutlined />
+    </div>
+  )
+
   return (
     <Sider
       collapsible
@@ -97,6 +126,7 @@ function SidebarMenu({ collapsed, setCollapsed, admin = false }) {
       width={230}
       breakpoint="lg"
       collapsedWidth={admin ? 80 : 0}
+      trigger={customTrigger} // 👈 trigger custom
     >
       <div className="app-sider-logo">
         <span className="app-logo-mark">IA</span>

@@ -47,7 +47,6 @@ function AppHeader({ dashboard = false }) {
 
   const role = user?.role
 
-  // 👇 Liens spécifiques à l'étudiant (affichés dans le burger)
   const studentNavItems = !dashboard && role === 'student'
     ? [
         {
@@ -65,7 +64,6 @@ function AppHeader({ dashboard = false }) {
       ]
     : []
 
-  // 👇 Optionnel : liens admin dans le burger (pratique en mobile)
   const adminNavItems =
     !dashboard && (role === 'admin' || role === 'superadmin')
       ? [
@@ -181,13 +179,16 @@ function AppHeader({ dashboard = false }) {
 
           {!dashboard && (
             <Button
-              type="text"
+              type="primary"
+              shape="circle"
               icon={<MenuOutlined />}
               onClick={() => setDrawerOpen(true)}
               aria-label="Menu"
               style={{
                 marginLeft: 4,
-                color: '#fff',
+                // tu peux ajuster la couleur si tu veux une teinte précise
+                // backgroundColor: '#ff4d4f',
+                // borderColor: '#ff4d4f',
               }}
             />
           )}
