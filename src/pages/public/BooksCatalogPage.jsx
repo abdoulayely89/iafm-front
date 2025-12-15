@@ -1,5 +1,5 @@
 // src/pages/public/BooksCatalogPage.jsx
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import {
   Row,
@@ -16,10 +16,12 @@ import {
   BookOutlined,
   SearchOutlined,
   FilePdfOutlined,
+  CrownOutlined,
+  MessageOutlined,
 } from '@ant-design/icons'
 import api from '../../services/api'
 import PageLoader from '../../components/common/PageLoader'
-import './BooksCatalogPage.css' // 👈 tu pourras créer ce fichier pour peaufiner le style
+import './BooksCatalogPage.css'
 
 const { Title, Paragraph, Text } = Typography
 const { Meta } = Card
@@ -31,6 +33,15 @@ function BooksCatalogPage() {
   const [filtered, setFiltered] = useState([])
   const [search, setSearch] = useState('')
 
+  // ✅ Abonnement livres (UI)
+  const SUB_PRICE = 3500
+  const whatsappMessage = useMemo(
+    () =>
+      `Bonjour, je souhaite m’abonner à la bibliothèque IAFM (abonnement mensuel ${SUB_PRICE} FCFA) pour accéder à tous les packs PDF.`,
+    [SUB_PRICE]
+  )
+  const whatsappUrl = `https://wa.me/221779110404?text=${encodeURIComponent(whatsappMessage)}`
+
   useEffect(() => {
     async function fetchBooks() {
       try {
@@ -40,6 +51,7 @@ function BooksCatalogPage() {
         setBooks(arr)
         setFiltered(arr)
       } catch (e) {
+        // eslint-disable-next-line no-console
         console.error('Erreur chargement livres:', e)
         setBooks([])
         setFiltered([])
@@ -90,6 +102,47 @@ function BooksCatalogPage() {
 
   return (
     <div className="page books-page">
+      {/* ✅ Bandeau abonnement livres */}
+      <Card
+        bordered={false}
+        style={{
+          borderRadius: 16,
+          marginBottom: 16,
+          boxShadow: '0 8px 24px rgba(0,0,0,0.04)',
+        }}
+        bodyStyle={{ padding: 18 }}
+      >
+        <Row gutter={[16, 12]} align="middle" justify="space-between">
+          <Col xs={24} md={16}>
+            <Space direction="vertical" size={2} style={{ width: '100%' }}>
+              <Space align="center">
+                <CrownOutlined />
+                <Text strong>Abonnement Bibliothèque</Text>
+                <Tag color="green">{SUB_PRICE.toLocaleString('fr-FR')} FCFA / mois</Tag>
+              </Space>
+              <Text type="secondary" style={{ lineHeight: 1.5 }}>
+                Accédez à <b>tous les packs PDF</b> avec un abonnement mensuel, au lieu
+                d’acheter chaque pack séparément.
+              </Text>
+            </Space>
+          </Col>
+
+          <Col xs={24} md={8} style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <Space wrap>
+              <Button
+                type="primary"
+                icon={<MessageOutlined />}
+                href={whatsappUrl}
+                target="_blank"
+                rel="noreferrer"
+              >
+                S’abonner via WhatsApp
+              </Button>
+            </Space>
+          </Col>
+        </Row>
+      </Card>
+
       {/* HEADER / HERO */}
       <div className="books-hero">
         <div className="books-hero-left">
@@ -186,14 +239,9 @@ function BooksCatalogPage() {
 
                     {/* Titre + description */}
                     <Meta
-                      title={
-                        <div className="book-card-title">
-                          {book.title}
-                        </div>
-                      }
+                      title={<div className="book-card-title">{book.title}</div>}
                       description={
-                        description ||
-                        'Pack de ressources PDF pour aller plus loin.'
+                        description || 'Pack de ressources PDF pour aller plus loin.'
                       }
                     />
 
@@ -225,9 +273,7 @@ function BooksCatalogPage() {
                           <FilePdfOutlined />
                           <Text type="secondary" style={{ fontSize: 12 }}>
                             {fileCount > 0
-                              ? `${fileCount} fichier${
-                                  fileCount > 1 ? 's' : ''
-                                } PDF`
+                              ? `${fileCount} fichier${fileCount > 1 ? 's' : ''} PDF`
                               : 'PDF à télécharger'}
                           </Text>
                         </Space>

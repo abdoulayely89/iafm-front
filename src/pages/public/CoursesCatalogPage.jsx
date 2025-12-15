@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react'
-import { Typography, Input, Select, Row, Col, Tag } from 'antd'
+import React, { useEffect, useState, useMemo } from 'react'
+import { Typography, Input, Select, Row, Col, Tag, Card, Space, Button } from 'antd'
+import { CrownOutlined, MessageOutlined } from '@ant-design/icons'
 import api from '../../services/api'
 import CourseGrid from '../../components/courses/CourseGrid'
 import PageLoader from '../../components/common/PageLoader'
@@ -14,6 +15,15 @@ function CoursesCatalogPage() {
   const [search, setSearch] = useState('')
   const [level, setLevel] = useState('')
 
+  // ✅ Abonnement (UI uniquement pour l’instant)
+  const SUB_PRICE = 5000
+  const whatsappMessage = useMemo(
+    () =>
+      `Bonjour, je souhaite m’abonner à IAFM (abonnement mensuel ${SUB_PRICE} FCFA) pour accéder à toutes les formations.`,
+    [SUB_PRICE]
+  )
+  const whatsappUrl = `https://wa.me/221779110404?text=${encodeURIComponent(whatsappMessage)}`
+
   useEffect(() => {
     async function fetchCourses() {
       setLoading(true)
@@ -24,7 +34,6 @@ function CoursesCatalogPage() {
         const { data } = await api.get('/courses', { params })
 
         const rawCourses = data.courses || []
-        // on ne fait que passer les données, CourseGrid gère thumbnailUrl
         setCourses(rawCourses)
       } catch (e) {
         setCourses([])
@@ -39,6 +48,47 @@ function CoursesCatalogPage() {
 
   return (
     <div className="page">
+      {/* ✅ Bandeau abonnement */}
+      <Card
+        bordered={false}
+        style={{
+          borderRadius: 16,
+          marginBottom: 16,
+          boxShadow: '0 8px 24px rgba(0,0,0,0.04)',
+        }}
+        bodyStyle={{ padding: 18 }}
+      >
+        <Row gutter={[16, 12]} align="middle" justify="space-between">
+          <Col xs={24} md={16}>
+            <Space direction="vertical" size={2} style={{ width: '100%' }}>
+              <Space align="center">
+                <CrownOutlined />
+                <Text strong>Abonnement IAFM</Text>
+                <Tag color="green">{SUB_PRICE.toLocaleString('fr-FR')} FCFA / mois</Tag>
+              </Space>
+              <Text type="secondary" style={{ lineHeight: 1.5 }}>
+                Accédez à <b>toutes les formations</b> avec un abonnement mensuel. Idéal si vous
+                suivez plusieurs parcours en même temps.
+              </Text>
+            </Space>
+          </Col>
+
+          <Col xs={24} md={8} style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <Space wrap>
+              <Button
+                type="primary"
+                icon={<MessageOutlined />}
+                href={whatsappUrl}
+                target="_blank"
+                rel="noreferrer"
+              >
+                S’abonner via WhatsApp
+              </Button>
+            </Space>
+          </Col>
+        </Row>
+      </Card>
+
       <Row
         justify="space-between"
         align="middle"
@@ -54,7 +104,7 @@ function CoursesCatalogPage() {
           <Text type="secondary">
             <Tag style={{ marginTop: 8 }}>
               {total === 0
-                ? "Aucune formation"
+                ? 'Aucune formation'
                 : total === 1
                 ? '1 formation'
                 : `${total} formations`}
