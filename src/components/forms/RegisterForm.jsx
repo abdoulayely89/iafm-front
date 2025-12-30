@@ -1,9 +1,22 @@
+// src/components/forms/RegisterForm.jsx
 import React, { useState } from 'react'
-import { Form, Input, Button, Typography, Alert } from 'antd'
+import { Form, Input, Button, Typography, Alert, message } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 
 const { Title, Paragraph } = Typography
+
+async function withTimeout(promise, ms = 20000) {
+  let timer
+  const timeout = new Promise((_, reject) => {
+    timer = setTimeout(() => reject(new Error('timeout')), ms)
+  })
+  try {
+    return await Promise.race([promise, timeout])
+  } finally {
+    return clearTimeout(timer)
+  }
+}
 
 function RegisterForm() {
   const [loading, setLoading] = useState(false)
@@ -14,10 +27,17 @@ function RegisterForm() {
   const onFinish = async (values) => {
     setError(null)
     setLoading(true)
+
     try {
-      await register(values)
+      await withTimeout(register(values), 20000)
+
+      message.success('Compte créé avec succès.')
       navigate('/student', { replace: true })
     } catch (e) {
+      if (e?.message === 'timeout') {
+        setError("Le serveur a mis trop de temps à répondre. Le compte a peut-être été créé : essaie de te connecter.")
+        return
+      }
       setError(e?.response?.data?.message || 'Échec de l’inscription.')
     } finally {
       setLoading(false)
@@ -30,14 +50,11 @@ function RegisterForm() {
       <Paragraph type="secondary">
         Rejoignez IAFM et suivez vos formations en ligne.
       </Paragraph>
+
       {error && (
-        <Alert
-          type="error"
-          message={error}
-          showIcon
-          style={{ marginBottom: 16 }}
-        />
+        <Alert type="error" message={error} showIcon style={{ marginBottom: 16 }} />
       )}
+
       <Form layout="vertical" onFinish={onFinish}>
         <Form.Item
           label="Prénom"
@@ -46,6 +63,7 @@ function RegisterForm() {
         >
           <Input autoComplete="given-name" />
         </Form.Item>
+
         <Form.Item
           label="Nom"
           name="lastName"
@@ -53,6 +71,7 @@ function RegisterForm() {
         >
           <Input autoComplete="family-name" />
         </Form.Item>
+
         <Form.Item
           label="Email"
           name="email"
@@ -63,6 +82,7 @@ function RegisterForm() {
         >
           <Input autoComplete="email" />
         </Form.Item>
+
         <Form.Item
           label="Mot de passe"
           name="password"
@@ -73,6 +93,7 @@ function RegisterForm() {
         >
           <Input.Password autoComplete="new-password" />
         </Form.Item>
+
         <Form.Item>
           <Button type="primary" htmlType="submit" block loading={loading}>
             S’inscrire

@@ -1,0 +1,220 @@
+/* src/pages/admin/books/BookRequestsPage.css */
+
+.br-page {
+    padding: 0;
+  }
+  
+  .br-header {
+    margin-bottom: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .br-title {
+    margin: 0 !important;
+  }
+  
+  .br-subtitle {
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  
+  .br-muted {
+    font-size: 12px;
+  }
+  
+  .br-stats {
+    margin-bottom: 12px;
+  }
+  
+  .br-stat-card {
+    border-radius: 14px;
+  }
+  
+  .br-stat {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+  }
+  
+  .br-stat-icon {
+    font-size: 22px;
+  }
+  
+  .br-blue { color: #1890ff; }
+  .br-orange { color: #fa8c16; }
+  .br-green { color: #52c41a; }
+  .br-red { color: #ff4d4f; }
+  
+  .br-stat-content {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  
+  .br-stat-value {
+    font-size: 18px;
+    line-height: 1.2;
+  }
+  
+  .br-list-card {
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.04);
+  }
+  
+  .br-list-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  
+  .br-list-left {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  
+  .br-list-title {
+    font-size: 14px;
+  }
+  
+  .br-list-hint {
+    line-height: 1.4;
+  }
+  
+  .br-filter {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  
+  .br-filter-label {
+    font-size: 12px;
+  }
+  
+  .br-filter-select {
+    min-width: 180px;
+  }
+  
+  @media (max-width: 480px) {
+    .br-filter-select {
+      width: 100%;
+      min-width: 0;
+    }
+  }
+  
+  .br-divider {
+    margin: 12px 0 !important;
+  }
+  
+  .br-table .ant-table {
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  
+  .br-cell {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .br-inline {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+  
+  .br-select {
+    width: 100%;
+    min-width: 0;
+  }
+  
+  .br-tag-slug {
+    font-size: 11px !important;
+    margin-top: 2px;
+    width: fit-content;
+  }
+  
+  /* ✅ Ellipsis propres (pas de texte vertical) */
+  .br-ellipsis-1 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+  }
+  
+  .br-ellipsis-2 {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    min-width: 0;
+  }
+  
+  /* ✅ MOBILE cards */
+  .br-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .br-request-card {
+    border-radius: 14px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.04);
+    overflow: hidden;
+  }
+  
+  .br-request-card .ant-card-body {
+    padding: 14px;
+  }
+  
+  .br-card-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    min-width: 0;
+  }
+  
+  .br-card-col {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  
+  .br-card-col-right {
+    flex: 0 0 auto;
+  }
+  
+  .br-card-book {
+    margin-top: 10px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    min-width: 0;
+  }
+  
+  .br-card-dates {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+  
+  .br-card-actions {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  

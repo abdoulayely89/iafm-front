@@ -13,13 +13,14 @@ import {
   List,
   Empty,
   Button,
+  Grid,
+  Popconfirm,
 } from 'antd'
 import {
   UserOutlined,
   BookOutlined,
   ClockCircleOutlined,
   CheckCircleOutlined,
-  CloseCircleOutlined,
 } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import api from '../../../services/api'
@@ -27,13 +28,19 @@ import PageLoader from '../../../components/common/PageLoader'
 
 const { Title, Text } = Typography
 const { Option } = Select
+const { useBreakpoint } = Grid
 
 function EnrollmentsListPage() {
   const [loading, setLoading] = useState(true)
   const [enrollments, setEnrollments] = useState([])
   const [statusFilter, setStatusFilter] = useState('all')
   const [selectedStudentId, setSelectedStudentId] = useState(null)
+  const [grantAllLoading, setGrantAllLoading] = useState(false)
+
   const navigate = useNavigate()
+
+  const screens = useBreakpoint()
+  const isMobile = !screens.sm
 
   const fetchEnrollments = async () => {
     setLoading(true)
@@ -42,15 +49,24 @@ function EnrollmentsListPage() {
       const list = data.enrollments || []
       setEnrollments(list)
 
-      // sélectionner par défaut le premier étudiant
       if (list.length > 0) {
-        const first = list[0].student?._id
-        if (first) setSelectedStudentId(first)
+        // si déjà sélectionné et toujours présent, ne pas écraser
+        const stillExists = selectedStudentId
+          ? list.some((e) => e.student?._id === selectedStudentId)
+          : false
+
+        if (!stillExists) {
+          const first = list[0].student?._id
+          if (first) setSelectedStudentId(first)
+        }
+      } else {
+        setSelectedStudentId(null)
       }
     } catch (e) {
       console.error(e)
       setEnrollments([])
-      message.error("Impossible de charger les inscriptions.")
+      setSelectedStudentId(null)
+      message.error('Impossible de charger les inscriptions.')
     } finally {
       setLoading(false)
     }
@@ -58,6 +74,7 @@ function EnrollmentsListPage() {
 
   useEffect(() => {
     fetchEnrollments()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const handleStatusChange = async (enrollmentId, status) => {
@@ -67,7 +84,24 @@ function EnrollmentsListPage() {
       fetchEnrollments()
     } catch (e) {
       console.error(e)
-      message.error("Impossible de mettre à jour le statut.")
+      message.error('Impossible de mettre à jour le statut.')
+    }
+  }
+
+  const handleGrantAllCourses = async (studentId) => {
+    if (!studentId) return
+    setGrantAllLoading(true)
+    try {
+      const { data } = await api.post('/admin/enrollments/grant-all', { studentId })
+      message.success(
+        `Accès global activé. Créés: ${data?.created ?? 0}, mis à jour: ${data?.updated ?? 0}, ignorés: ${data?.skipped ?? 0}.`
+      )
+      fetchEnrollments()
+    } catch (e) {
+      console.error(e)
+      message.error("Impossible d'activer l'accès global.")
+    } finally {
+      setGrantAllLoading(false)
     }
   }
 
@@ -97,7 +131,11 @@ function EnrollmentsListPage() {
         label = status || '—'
     }
 
-    return <Tag color={color}>{label}</Tag>
+    return (
+      <Tag style={{ marginInlineEnd: 0, maxWidth: '100%' }} color={color}>
+        {label}
+      </Tag>
+    )
   }
 
   // 📊 Stats globales
@@ -148,7 +186,13 @@ function EnrollmentsListPage() {
   if (loading) return <PageLoader />
 
   return (
-    <div className="page admin-enrollments-page">
+    <div
+      className="page admin-enrollments-page"
+      style={{
+        maxWidth: '100%',
+        overflowX: 'hidden',
+      }}
+    >
       {/* Header */}
       <div
         style={{
@@ -156,14 +200,14 @@ function EnrollmentsListPage() {
           display: 'flex',
           flexDirection: 'column',
           gap: 4,
+          maxWidth: '100%',
         }}
       >
         <Title level={2} style={{ marginBottom: 0 }}>
           Inscriptions aux cours
         </Title>
-        <Text type="secondary">
-          Choisis un étudiant pour voir tous les cours auxquels il est inscrit
-          et gérer ses accès.
+        <Text type="secondary" style={{ maxWidth: '100%' }}>
+          Choisis un étudiant pour voir tous les cours auxquels il est inscrit et gérer ses accès.
         </Text>
       </div>
 
@@ -171,7 +215,7 @@ function EnrollmentsListPage() {
       <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
         <Col xs={24} md={6}>
           <Card size="small" style={{ borderRadius: 12 }}>
-            <Space>
+            <Space align="center" size={12} style={{ width: '100%' }}>
               <Badge
                 count={stats.total}
                 overflowCount={999}
@@ -179,7 +223,7 @@ function EnrollmentsListPage() {
               >
                 <UserOutlined style={{ fontSize: 22, color: '#1890ff' }} />
               </Badge>
-              <div>
+              <div style={{ minWidth: 0 }}>
                 <Text type="secondary" style={{ fontSize: 12 }}>
                   Total inscriptions
                 </Text>
@@ -195,9 +239,9 @@ function EnrollmentsListPage() {
 
         <Col xs={24} md={6}>
           <Card size="small" style={{ borderRadius: 12 }}>
-            <Space>
+            <Space align="center" size={12} style={{ width: '100%' }}>
               <ClockCircleOutlined style={{ fontSize: 22, color: '#fa8c16' }} />
-              <div>
+              <div style={{ minWidth: 0 }}>
                 <Text type="secondary" style={{ fontSize: 12 }}>
                   En attente
                 </Text>
@@ -213,9 +257,9 @@ function EnrollmentsListPage() {
 
         <Col xs={24} md={6}>
           <Card size="small" style={{ borderRadius: 12 }}>
-            <Space>
+            <Space align="center" size={12} style={{ width: '100%' }}>
               <CheckCircleOutlined style={{ fontSize: 22, color: '#1890ff' }} />
-              <div>
+              <div style={{ minWidth: 0 }}>
                 <Text type="secondary" style={{ fontSize: 12 }}>
                   Actives
                 </Text>
@@ -231,9 +275,9 @@ function EnrollmentsListPage() {
 
         <Col xs={24} md={6}>
           <Card size="small" style={{ borderRadius: 12 }}>
-            <Space>
+            <Space align="center" size={12} style={{ width: '100%' }}>
               <BookOutlined style={{ fontSize: 22, color: '#52c41a' }} />
-              <div>
+              <div style={{ minWidth: 0 }}>
                 <Text type="secondary" style={{ fontSize: 12 }}>
                   Terminées / Annulées
                 </Text>
@@ -248,7 +292,7 @@ function EnrollmentsListPage() {
         </Col>
       </Row>
 
-      {/* Layout 2 colonnes : gauche = étudiants, droite = cours de l'étudiant */}
+      {/* Layout 2 colonnes */}
       <Row gutter={[16, 16]}>
         {/* Colonne gauche : liste des étudiants */}
         <Col xs={24} md={8}>
@@ -260,6 +304,7 @@ function EnrollmentsListPage() {
               borderRadius: 16,
               boxShadow: '0 8px 24px rgba(0,0,0,0.04)',
               height: '100%',
+              maxWidth: '100%',
             }}
           >
             {students.length === 0 ? (
@@ -272,71 +317,66 @@ function EnrollmentsListPage() {
                 dataSource={students}
                 rowKey={(item) => item.student._id}
                 renderItem={(item) => {
-                  const isSelected =
-                    item.student._id === selectedStudentId
+                  const isSelected = item.student._id === selectedStudentId
                   const count = item.enrollments.length
-
-                  const pendingCount = item.enrollments.filter(
-                    (e) => e.status === 'pending'
-                  ).length
+                  const pendingCount = item.enrollments.filter((e) => e.status === 'pending').length
 
                   return (
                     <List.Item
                       style={{
                         cursor: 'pointer',
                         borderRadius: 10,
-                        padding: '8px 10px',
-                        backgroundColor: isSelected
-                          ? 'rgba(24, 144, 255, 0.06)'
-                          : 'transparent',
+                        padding: isMobile ? '10px 10px' : '8px 10px',
+                        backgroundColor: isSelected ? 'rgba(24, 144, 255, 0.06)' : 'transparent',
+                        maxWidth: '100%',
                       }}
-                      onClick={() =>
-                        setSelectedStudentId(item.student._id)
-                      }
+                      onClick={() => setSelectedStudentId(item.student._id)}
                     >
-                      <Space align="start">
-                        <Badge
-                          count={count}
-                          size="small"
-                          style={{ backgroundColor: '#1890ff' }}
-                        >
+                      <div
+                        style={{
+                          display: 'flex',
+                          gap: 12,
+                          width: '100%',
+                          minWidth: 0,
+                          alignItems: 'flex-start',
+                        }}
+                      >
+                        <Badge count={count} size="small" style={{ backgroundColor: '#1890ff' }}>
                           <UserOutlined
                             style={{
                               fontSize: 20,
-                              color: isSelected
-                                ? '#1890ff'
-                                : '#888',
+                              color: isSelected ? '#1890ff' : '#888',
                             }}
                           />
                         </Badge>
-                        <div>
-                          <Text strong>
-                            {item.student.firstName}{' '}
-                            {item.student.lastName}
+
+                        <div style={{ minWidth: 0, flex: 1 }}>
+                          <Text strong style={{ display: 'block' }} ellipsis={{ tooltip: true }}>
+                            {item.student.firstName} {item.student.lastName}
                           </Text>
-                          <div>
-                            <Text
-                              type="secondary"
-                              style={{ fontSize: 12 }}
-                            >
-                              {item.student.email}
-                            </Text>
-                          </div>
-                          <div style={{ marginTop: 4 }}>
-                            <Tag color="blue" style={{ fontSize: 11 }}>
-                              {count} cours
-                            </Tag>
-                            {pendingCount > 0 && (
-                              <Tag
-                                color="orange"
-                                style={{ fontSize: 11 }}
-                              >
-                                {pendingCount} en attente
+
+                          <Text
+                            type="secondary"
+                            style={{ fontSize: 12, display: 'block' }}
+                            ellipsis={{ tooltip: item.student.email }}
+                          >
+                            {item.student.email}
+                          </Text>
+
+                          <div style={{ marginTop: 6 }}>
+                            <Space size={[6, 6]} wrap style={{ width: '100%' }}>
+                              <Tag color="blue" style={{ fontSize: 11, marginInlineEnd: 0 }}>
+                                {count} cours
                               </Tag>
-                            )}
+                              {pendingCount > 0 && (
+                                <Tag color="orange" style={{ fontSize: 11, marginInlineEnd: 0 }}>
+                                  {pendingCount} en attente
+                                </Tag>
+                              )}
+                            </Space>
                           </div>
                         </div>
-                      </Space>
+                      </div>
                     </List.Item>
                   )
                 }}
@@ -345,62 +385,88 @@ function EnrollmentsListPage() {
           </Card>
         </Col>
 
-        {/* Colonne droite : détails des inscriptions de l'étudiant */}
+        {/* Colonne droite : détails */}
         <Col xs={24} md={16}>
           <Card
             bordered={false}
             style={{
               borderRadius: 16,
               boxShadow: '0 8px 24px rgba(0,0,0,0.04)',
+              maxWidth: '100%',
             }}
-            bodyStyle={{ padding: 16 }}
+            bodyStyle={{ padding: isMobile ? 12 : 16 }}
           >
             {selectedStudentBlock ? (
               <>
-                {/* Header étudiant + filtre */}
-                <div
-                  style={{
-                    marginBottom: 16,
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    gap: 12,
-                    flexWrap: 'wrap',
-                  }}
-                >
-                  <div>
-                    <Text type="secondary" style={{ fontSize: 12 }}>
-                      Étudiant sélectionné
-                    </Text>
-                    <div>
-                      <Text strong style={{ fontSize: 16 }}>
+                {/* Header étudiant + filtre + accès global */}
+                <Row gutter={[12, 12]} align="middle" style={{ marginBottom: 16 }}>
+                  <Col xs={24} sm={10}>
+                    <div style={{ minWidth: 0 }}>
+                      <Text type="secondary" style={{ fontSize: 12 }}>
+                        Étudiant sélectionné
+                      </Text>
+
+                      <Text strong style={{ fontSize: 16, display: 'block' }} ellipsis={{ tooltip: true }}>
                         {selectedStudentBlock.student.firstName}{' '}
                         {selectedStudentBlock.student.lastName}
                       </Text>
-                    </div>
-                    <Text type="secondary" style={{ fontSize: 12 }}>
-                      {selectedStudentBlock.student.email}
-                    </Text>
-                  </div>
 
-                  <Space align="center">
-                    <Text type="secondary" style={{ fontSize: 12 }}>
-                      Filtrer ses cours par statut :
-                    </Text>
-                    <Select
-                      value={statusFilter}
-                      onChange={setStatusFilter}
-                      size="small"
-                      style={{ minWidth: 180 }}
+                      <Text
+                        type="secondary"
+                        style={{ fontSize: 12, display: 'block' }}
+                        ellipsis={{ tooltip: selectedStudentBlock.student.email }}
+                      >
+                        {selectedStudentBlock.student.email}
+                      </Text>
+                    </div>
+                  </Col>
+
+                  <Col xs={24} sm={8}>
+                    <div style={{ width: '100%' }}>
+                      <Text
+                        type="secondary"
+                        style={{ fontSize: 12, display: 'block', marginBottom: 6 }}
+                      >
+                        Filtrer ses cours par statut :
+                      </Text>
+                      <Select
+                        value={statusFilter}
+                        onChange={setStatusFilter}
+                        size="middle"
+                        style={{ width: '100%' }}
+                      >
+                        <Option value="all">Tous les statuts</Option>
+                        <Option value="pending">En attente</Option>
+                        <Option value="active">Actives</Option>
+                        <Option value="completed">Terminées</Option>
+                        <Option value="cancelled">Annulées</Option>
+                      </Select>
+                    </div>
+                  </Col>
+
+                  <Col xs={24} sm={6}>
+                    <Popconfirm
+                      title="Accès global ?"
+                      description="Cela va activer l'accès à toutes les formations pour cet étudiant."
+                      okText="Oui, activer"
+                      cancelText="Annuler"
+                      onConfirm={() =>
+                        handleGrantAllCourses(selectedStudentBlock.student._id)
+                      }
+                      disabled={grantAllLoading}
                     >
-                      <Option value="all">Tous les statuts</Option>
-                      <Option value="pending">En attente</Option>
-                      <Option value="active">Actives</Option>
-                      <Option value="completed">Terminées</Option>
-                      <Option value="cancelled">Annulées</Option>
-                    </Select>
-                  </Space>
-                </div>
+                      <Button
+                        type="primary"
+                        icon={<BookOutlined />}
+                        loading={grantAllLoading}
+                        block={isMobile}
+                        style={{ width: '100%' }}
+                      >
+                        Accès global
+                      </Button>
+                    </Popconfirm>
+                  </Col>
+                </Row>
 
                 {filteredEnrollmentsForStudent.length === 0 ? (
                   <Empty
@@ -408,135 +474,124 @@ function EnrollmentsListPage() {
                     description="Aucune inscription ne correspond à ce filtre pour cet étudiant."
                   />
                 ) : (
-                  <Space
-                    direction="vertical"
-                    size={12}
-                    style={{ width: '100%' }}
-                  >
+                  <Space direction="vertical" size={12} style={{ width: '100%' }}>
                     {filteredEnrollmentsForStudent.map((enr) => (
                       <Card
                         key={enr._id}
                         size="small"
-                        style={{ borderRadius: 12 }}
+                        style={{ borderRadius: 12, maxWidth: '100%' }}
+                        bodyStyle={{ padding: isMobile ? 12 : 16 }}
                       >
-                        <Row gutter={[8, 8]} align="middle">
+                        <Row gutter={[12, 12]} align="top">
+                          {/* Bloc infos cours */}
                           <Col xs={24} md={14}>
-                            <Space direction="vertical" size={0}>
-                              <Text strong>
+                            <div style={{ minWidth: 0 }}>
+                              <Text strong style={{ display: 'block' }} ellipsis={{ tooltip: true }}>
                                 {enr.course?.title || 'Cours inconnu'}
                               </Text>
+
                               {enr.course?.slug && (
                                 <Tag
                                   color="geekblue"
                                   style={{
-                                    marginTop: 2,
+                                    marginTop: 6,
                                     fontSize: 11,
-                                    width: 'fit-content',
+                                    display: 'inline-block',
+                                    maxWidth: '100%',
                                   }}
                                 >
-                                  {enr.course.slug}
+                                  <span
+                                    style={{
+                                      display: 'inline-block',
+                                      maxWidth: '100%',
+                                      overflow: 'hidden',
+                                      textOverflow: 'ellipsis',
+                                      whiteSpace: 'nowrap',
+                                      verticalAlign: 'bottom',
+                                    }}
+                                    title={enr.course.slug}
+                                  >
+                                    {enr.course.slug}
+                                  </span>
                                 </Tag>
                               )}
-                              <Text
-                                type="secondary"
-                                style={{ fontSize: 12 }}
-                              >
+
+                              <Text type="secondary" style={{ fontSize: 12, display: 'block', marginTop: 6 }}>
                                 Demandé le :{' '}
-                                {enr.createdAt
-                                  ? new Date(
-                                      enr.createdAt
-                                    ).toLocaleString('fr-FR')
-                                  : '—'}
+                                {enr.createdAt ? new Date(enr.createdAt).toLocaleString('fr-FR') : '—'}
                               </Text>
+
                               {enr.startedAt && (
-                                <Text
-                                  type="secondary"
-                                  style={{ fontSize: 12 }}
-                                >
-                                  Activé le :{' '}
-                                  {new Date(
-                                    enr.startedAt
-                                  ).toLocaleDateString('fr-FR')}
+                                <Text type="secondary" style={{ fontSize: 12, display: 'block' }}>
+                                  Activé le : {new Date(enr.startedAt).toLocaleDateString('fr-FR')}
                                 </Text>
                               )}
-                            </Space>
+                            </div>
                           </Col>
 
+                          {/* Bloc actions / statut */}
                           <Col xs={24} md={10}>
-                            <Space
-                              direction="vertical"
-                              size={6}
-                              style={{ width: '100%' }}
-                            >
-                              <Space
-                                style={{
-                                  display: 'flex',
-                                  justifyContent: 'space-between',
-                                  width: '100%',
-                                }}
-                              >
-                                {renderStatusTag(enr.status)}
-                                <Select
-                                  value={enr.status}
-                                  onChange={(value) =>
-                                    handleStatusChange(
-                                      enr._id,
-                                      value
-                                    )
-                                  }
-                                  size="small"
-                                  style={{ width: 170 }}
-                                >
-                                  <Option value="pending">
-                                    En attente
-                                  </Option>
-                                  <Option value="active">
-                                    Active (acceptée)
-                                  </Option>
-                                  <Option value="completed">
-                                    Terminée
-                                  </Option>
-                                  <Option value="cancelled">
-                                    Annulée
-                                  </Option>
-                                </Select>
-                              </Space>
+                            <div style={{ width: '100%' }}>
+                              <Space direction="vertical" size={10} style={{ width: '100%' }}>
+                                <Row gutter={[8, 8]} align="middle">
+                                  <Col xs={24} sm={10} style={{ minWidth: 0 }}>
+                                    <div style={{ width: '100%' }}>
+                                      {renderStatusTag(enr.status)}
+                                    </div>
+                                  </Col>
 
-                              <div
-                                style={{
-                                  display: 'flex',
-                                  justifyContent: 'flex-end',
-                                  gap: 8,
-                                }}
-                              >
-                                {enr.status === 'pending' && (
-                                  <Button
-                                    size="small"
-                                    type="primary"
-                                    onClick={() =>
-                                      handleStatusChange(
-                                        enr._id,
-                                        'active'
-                                      )
-                                    }
-                                  >
-                                    Accepter
-                                  </Button>
-                                )}
-                                {enr.course?._id && (
-                                  <Button
-                                    size="small"
-                                    onClick={() =>
-                                      navigate(
-                                        `/admin/courses/${enr.course._id}`
-                                      )
-                                    }
-                                  >
-                                    Ouvrir le cours
-                                  </Button>
-                                )}
-                              </div>
-                            </Space>
+                                  <Col xs={24} sm={14} style={{ minWidth: 0 }}>
+                                    <Select
+                                      value={enr.status}
+                                      onChange={(value) =>
+                                        handleStatusChange(enr._id, value)
+                                      }
+                                      size="middle"
+                                      style={{ width: '100%' }}
+                                    >
+                                      <Option value="pending">En attente</Option>
+                                      <Option value="active">Active (acceptée)</Option>
+                                      <Option value="completed">Terminée</Option>
+                                      <Option value="cancelled">Annulée</Option>
+                                    </Select>
+                                  </Col>
+                                </Row>
+
+                                <Space
+                                  direction={isMobile ? 'vertical' : 'horizontal'}
+                                  size={8}
+                                  style={{
+                                    width: '100%',
+                                    justifyContent: isMobile ? 'stretch' : 'flex-end',
+                                  }}
+                                >
+                                  {enr.status === 'pending' && (
+                                    <Button
+                                      size="middle"
+                                      type="primary"
+                                      block={isMobile}
+                                      onClick={() =>
+                                        handleStatusChange(enr._id, 'active')
+                                      }
+                                    >
+                                      Accepter
+                                    </Button>
+                                  )}
+
+                                  {enr.course?._id && (
+                                    <Button
+                                      size="middle"
+                                      block={isMobile}
+                                      onClick={() =>
+                                        navigate(`/admin/courses/${enr.course._id}`)
+                                      }
+                                    >
+                                      Ouvrir le cours
+                                    </Button>
+                                  )}
+                                </Space>
+                              </Space>
+                            </div>
                           </Col>
                         </Row>
                       </Card>

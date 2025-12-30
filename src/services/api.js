@@ -1,8 +1,10 @@
+// src/services/api.js
 import axios from 'axios'
 import appConfig from '../config/appConfig'
 
 const api = axios.create({
   baseURL: appConfig.apiBaseUrl,
+  timeout: 20000, // ✅ évite les "pending" infinis (20s)
 })
 
 function readAuthFrom(storage) {
@@ -25,7 +27,6 @@ function ensureSessionAuth() {
 
   const legacyAuth = readAuthFrom(window.localStorage)
   if (legacyAuth?.token) {
-    // On copie vers session pour ce tab
     window.sessionStorage.setItem('iafm_auth', JSON.stringify(legacyAuth))
     return legacyAuth
   }
@@ -36,13 +37,28 @@ function ensureSessionAuth() {
 api.interceptors.request.use((config) => {
   if (typeof window !== 'undefined') {
     const auth = ensureSessionAuth()
-
     if (auth?.token) {
       config.headers = config.headers || {}
       config.headers.Authorization = `Bearer ${auth.token}`
     }
   }
+
+  config.headers = config.headers || {}
+  config.headers['Content-Type'] = 'application/json'
+
   return config
 })
+
+// Optionnel : log utile en dev
+api.interceptors.response.use(
+  (res) => res,
+  (err) => {
+    // Axios timeout
+    if (err.code === 'ECONNABORTED') {
+      err.message = 'La requête a expiré (timeout).'
+    }
+    throw err
+  }
+)
 
 export default api

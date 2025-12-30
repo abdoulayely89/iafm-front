@@ -1,5 +1,5 @@
 // src/pages/admin/books/BookRequestsPage.jsx
-import React, { useEffect, useState, useMemo } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import {
   Card,
   Table,
@@ -10,6 +10,9 @@ import {
   Row,
   Col,
   message,
+  Grid,
+  Empty,
+  Divider,
 } from 'antd'
 import {
   UserOutlined,
@@ -20,11 +23,15 @@ import {
 } from '@ant-design/icons'
 import api from '../../../services/api'
 import PageLoader from '../../../components/common/PageLoader'
+import './BookRequestsPage.css'
 
 const { Title, Text } = Typography
 const { Option } = Select
+const { useBreakpoint } = Grid
 
 function BookRequestsPage() {
+  const screens = useBreakpoint()
+
   const [loading, setLoading] = useState(true)
   const [requests, setRequests] = useState([])
   const [statusFilter, setStatusFilter] = useState('all')
@@ -77,7 +84,9 @@ function BookRequestsPage() {
     const total = requests.length
     const pending = requests.filter((r) => r.status === 'pending').length
     const approved = requests.filter((r) => r.status === 'approved').length
-    const rejected = requests.filter((r) => r.status === 'rejected').length
+    const rejected = requests.filter(
+      (r) => r.status === 'rejected' || r.status === 'cancelled'
+    ).length
     return { total, pending, approved, rejected }
   }, [requests])
 
@@ -86,177 +95,157 @@ function BookRequestsPage() {
     return requests.filter((r) => r.status === statusFilter)
   }, [requests, statusFilter])
 
+  const formatDate = (dt) => {
+    if (!dt) return '—'
+    try {
+      return new Date(dt).toLocaleString('fr-FR')
+    } catch {
+      return '—'
+    }
+  }
+
+  // ✅ Desktop table columns (lisibles, avec ellipsis, pas de vertical “cassé”)
   const columns = [
     {
       title: 'Étudiant',
       key: 'student',
-      render: (_, record) => (
-        <Space direction="vertical" size={0}>
-          <Text strong>
-            {record.student?.firstName} {record.student?.lastName}
-          </Text>
-          <Text type="secondary" style={{ fontSize: 12 }}>
-            {record.student?.email}
-          </Text>
-        </Space>
-      ),
+      width: 260,
+      render: (_, record) => {
+        const name = `${record.student?.firstName || ''} ${record.student?.lastName || ''}`.trim() || '—'
+        const email = record.student?.email || '—'
+        return (
+          <div className="br-cell">
+            <Text strong className="br-ellipsis-1">{name}</Text>
+            <Text type="secondary" className="br-ellipsis-1 br-muted">{email}</Text>
+          </div>
+        )
+      },
     },
     {
       title: 'Pack PDF',
       key: 'book',
-      render: (_, record) => (
-        <Space direction="vertical" size={0}>
-          <Space>
-            <FilePdfOutlined />
-            <Text>{record.book?.title || '—'}</Text>
-          </Space>
-          {record.book?.slug && (
-            <Tag color="geekblue" style={{ fontSize: 11 }}>
-              {record.book.slug}
-            </Tag>
-          )}
-        </Space>
-      ),
+      render: (_, record) => {
+        const title = record.book?.title || '—'
+        const slug = record.book?.slug || ''
+        return (
+          <div className="br-cell">
+            <div className="br-inline">
+              <FilePdfOutlined />
+              <Text className="br-ellipsis-2">{title}</Text>
+            </div>
+            {slug ? (
+              <Tag color="geekblue" className="br-tag-slug">
+                {slug}
+              </Tag>
+            ) : null}
+          </div>
+        )
+      },
     },
     {
       title: 'Statut',
       dataIndex: 'status',
       key: 'status',
+      width: 240,
       render: (status, record) => (
-        <Space direction="vertical" size={4}>
-          {renderStatusTag(status)}
+        <div className="br-cell">
+          <div className="br-inline">{renderStatusTag(status)}</div>
           <Select
             value={status}
             onChange={(value) => handleStatusChange(record._id, value)}
-            size="small"
-            style={{ minWidth: 150 }}
+            size="middle"
+            className="br-select"
           >
             <Option value="pending">En attente</Option>
             <Option value="approved">Approuvée</Option>
             <Option value="rejected">Refusée</Option>
             <Option value="cancelled">Annulée</Option>
           </Select>
-        </Space>
+        </div>
       ),
     },
     {
       title: 'Dates',
       key: 'dates',
+      width: 260,
       render: (_, record) => (
-        <Space direction="vertical" size={0}>
-          <Text type="secondary" style={{ fontSize: 12 }}>
-            Demandé le :{' '}
-            {record.createdAt
-              ? new Date(record.createdAt).toLocaleString('fr-FR')
-              : '—'}
+        <div className="br-cell">
+          <Text type="secondary" className="br-muted br-ellipsis-1">
+            Demandé : {formatDate(record.createdAt)}
           </Text>
-          {record.approvedAt && (
-            <Text type="secondary" style={{ fontSize: 12 }}>
-              Approuvé le :{' '}
-              {new Date(record.approvedAt).toLocaleString('fr-FR')}
+          {record.approvedAt ? (
+            <Text type="secondary" className="br-muted br-ellipsis-1">
+              Approuvé : {formatDate(record.approvedAt)}
             </Text>
-          )}
-        </Space>
+          ) : null}
+        </div>
       ),
     },
   ]
 
   if (loading) return <PageLoader />
 
+  const isMobile = !screens.md
+
   return (
-    <div className="page">
+    <div className="page br-page">
       {/* Header */}
-      <div
-        style={{
-          marginBottom: 16,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 4,
-        }}
-      >
-        <Title level={2} style={{ marginBottom: 0 }}>
+      <div className="br-header">
+        <Title level={2} className="br-title">
           Demandes de packs PDF
         </Title>
-        <Text type="secondary">
-          Valide manuellement les accès aux packs PDF après paiement
-          (WhatsApp, virement, etc.).
+        <Text type="secondary" className="br-subtitle">
+          Valide manuellement les accès aux packs PDF après paiement (WhatsApp, virement, etc.).
         </Text>
       </div>
 
       {/* Stats */}
-      <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
-        <Col xs={24} md={6}>
-          <Card size="small" style={{ borderRadius: 12 }}>
-            <Space>
-              <UserOutlined style={{ fontSize: 22, color: '#1890ff' }} />
-              <div>
-                <Text type="secondary" style={{ fontSize: 12 }}>
-                  Total demandes
-                </Text>
-                <div>
-                  <Text strong style={{ fontSize: 18 }}>
-                    {stats.total}
-                  </Text>
-                </div>
+      <Row gutter={[12, 12]} className="br-stats">
+        <Col xs={24} sm={12} md={6}>
+          <Card size="small" className="br-stat-card">
+            <div className="br-stat">
+              <UserOutlined className="br-stat-icon br-blue" />
+              <div className="br-stat-content">
+                <Text type="secondary" className="br-muted">Total demandes</Text>
+                <Text strong className="br-stat-value">{stats.total}</Text>
               </div>
-            </Space>
+            </div>
           </Card>
         </Col>
-        <Col xs={24} md={6}>
-          <Card size="small" style={{ borderRadius: 12 }}>
-            <Space>
-              <ClockCircleOutlined
-                style={{ fontSize: 22, color: '#fa8c16' }}
-              />
-              <div>
-                <Text type="secondary" style={{ fontSize: 12 }}>
-                  En attente
-                </Text>
-                <div>
-                  <Text strong style={{ fontSize: 18 }}>
-                    {stats.pending}
-                  </Text>
-                </div>
+
+        <Col xs={24} sm={12} md={6}>
+          <Card size="small" className="br-stat-card">
+            <div className="br-stat">
+              <ClockCircleOutlined className="br-stat-icon br-orange" />
+              <div className="br-stat-content">
+                <Text type="secondary" className="br-muted">En attente</Text>
+                <Text strong className="br-stat-value">{stats.pending}</Text>
               </div>
-            </Space>
+            </div>
           </Card>
         </Col>
-        <Col xs={24} md={6}>
-          <Card size="small" style={{ borderRadius: 12 }}>
-            <Space>
-              <CheckCircleOutlined
-                style={{ fontSize: 22, color: '#52c41a' }}
-              />
-              <div>
-                <Text type="secondary" style={{ fontSize: 12 }}>
-                  Approuvées
-                </Text>
-                <div>
-                  <Text strong style={{ fontSize: 18 }}>
-                    {stats.approved}
-                  </Text>
-                </div>
+
+        <Col xs={24} sm={12} md={6}>
+          <Card size="small" className="br-stat-card">
+            <div className="br-stat">
+              <CheckCircleOutlined className="br-stat-icon br-green" />
+              <div className="br-stat-content">
+                <Text type="secondary" className="br-muted">Approuvées</Text>
+                <Text strong className="br-stat-value">{stats.approved}</Text>
               </div>
-            </Space>
+            </div>
           </Card>
         </Col>
-        <Col xs={24} md={6}>
-          <Card size="small" style={{ borderRadius: 12 }}>
-            <Space>
-              <CloseCircleOutlined
-                style={{ fontSize: 22, color: '#ff4d4f' }}
-              />
-              <div>
-                <Text type="secondary" style={{ fontSize: 12 }}>
-                  Refusées / Annulées
-                </Text>
-                <div>
-                  <Text strong style={{ fontSize: 18 }}>
-                    {stats.rejected}
-                  </Text>
-                </div>
+
+        <Col xs={24} sm={12} md={6}>
+          <Card size="small" className="br-stat-card">
+            <div className="br-stat">
+              <CloseCircleOutlined className="br-stat-icon br-red" />
+              <div className="br-stat-content">
+                <Text type="secondary" className="br-muted">Refusées / Annulées</Text>
+                <Text strong className="br-stat-value">{stats.rejected}</Text>
               </div>
-            </Space>
+            </div>
           </Card>
         </Col>
       </Row>
@@ -264,52 +253,114 @@ function BookRequestsPage() {
       {/* Liste */}
       <Card
         bordered={false}
-        style={{ borderRadius: 16, boxShadow: '0 8px 24px rgba(0,0,0,0.04)' }}
+        className="br-list-card"
         bodyStyle={{ padding: 16 }}
       >
-        <div
-          style={{
-            marginBottom: 12,
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            gap: 12,
-            flexWrap: 'wrap',
-          }}
-        >
-          <Space direction="vertical" size={0}>
-            <Text strong>Liste des demandes</Text>
-            <Text type="secondary" style={{ fontSize: 12 }}>
-              Filtre par statut pour traiter rapidement les demandes en
-              attente.
+        <div className="br-list-top">
+          <div className="br-list-left">
+            <Text strong className="br-list-title">Liste des demandes</Text>
+            <Text type="secondary" className="br-muted br-list-hint">
+              Filtre par statut pour traiter rapidement les demandes.
             </Text>
-          </Space>
+          </div>
 
-          <Space>
-            <Text type="secondary" style={{ fontSize: 12 }}>
-              Filtrer par statut :
-            </Text>
+          <div className="br-filter">
+            <Text type="secondary" className="br-muted br-filter-label">Statut</Text>
             <Select
               value={statusFilter}
               onChange={setStatusFilter}
-              size="small"
-              style={{ minWidth: 180 }}
+              size="middle"
+              className="br-filter-select"
             >
-              <Option value="all">Tous les statuts</Option>
+              <Option value="all">Tous</Option>
               <Option value="pending">En attente</Option>
               <Option value="approved">Approuvées</Option>
               <Option value="rejected">Refusées</Option>
               <Option value="cancelled">Annulées</Option>
             </Select>
-          </Space>
+          </div>
         </div>
 
-        <Table
-          rowKey="_id"
-          dataSource={filteredRequests}
-          columns={columns}
-          pagination={{ pageSize: 10 }}
-        />
+        <Divider className="br-divider" />
+
+        {filteredRequests.length === 0 ? (
+          <Empty
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+            description="Aucune demande pour ce filtre."
+          />
+        ) : isMobile ? (
+          // ✅ MOBILE: Cards propres (pas de table)
+          <div className="br-cards">
+            {filteredRequests.map((r) => {
+              const studentName = `${r.student?.firstName || ''} ${r.student?.lastName || ''}`.trim() || '—'
+              const studentEmail = r.student?.email || '—'
+              const bookTitle = r.book?.title || '—'
+              const bookSlug = r.book?.slug || ''
+              const status = r.status
+
+              return (
+                <Card key={r._id} className="br-request-card" bordered={false}>
+                  <div className="br-card-row">
+                    <div className="br-card-col">
+                      <Text strong className="br-ellipsis-1">{studentName}</Text>
+                      <Text type="secondary" className="br-muted br-ellipsis-1">{studentEmail}</Text>
+                    </div>
+                    <div className="br-card-col-right">
+                      {renderStatusTag(status)}
+                    </div>
+                  </div>
+
+                  <div className="br-card-book">
+                    <FilePdfOutlined />
+                    <Text className="br-ellipsis-2">{bookTitle}</Text>
+                  </div>
+
+                  {bookSlug ? (
+                    <Tag color="geekblue" className="br-tag-slug">
+                      {bookSlug}
+                    </Tag>
+                  ) : null}
+
+                  <div className="br-card-dates">
+                    <Text type="secondary" className="br-muted br-ellipsis-1">
+                      Demandé : {formatDate(r.createdAt)}
+                    </Text>
+                    {r.approvedAt ? (
+                      <Text type="secondary" className="br-muted br-ellipsis-1">
+                        Approuvé : {formatDate(r.approvedAt)}
+                      </Text>
+                    ) : null}
+                  </div>
+
+                  <div className="br-card-actions">
+                    <Text type="secondary" className="br-muted br-filter-label">Changer statut</Text>
+                    <Select
+                      value={status}
+                      onChange={(value) => handleStatusChange(r._id, value)}
+                      size="middle"
+                      className="br-select"
+                    >
+                      <Option value="pending">En attente</Option>
+                      <Option value="approved">Approuvée</Option>
+                      <Option value="rejected">Refusée</Option>
+                      <Option value="cancelled">Annulée</Option>
+                    </Select>
+                  </div>
+                </Card>
+              )
+            })}
+          </div>
+        ) : (
+          // ✅ DESKTOP: Table
+          <Table
+            rowKey="_id"
+            dataSource={filteredRequests}
+            columns={columns}
+            pagination={{ pageSize: 10, showSizeChanger: false }}
+            className="br-table"
+            scroll={{ x: 900 }}
+          />
+        )}
       </Card>
     </div>
   )
