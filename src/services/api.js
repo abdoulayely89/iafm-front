@@ -2,6 +2,7 @@
 import axios from 'axios'
 import appConfig from '../config/appConfig'
 
+//un commentaire test
 const api = axios.create({
   baseURL: appConfig.apiBaseUrl,
   timeout: 20000, // ✅ évite les "pending" infinis (20s)
