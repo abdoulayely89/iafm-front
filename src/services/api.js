@@ -36,6 +36,7 @@ function ensureSessionAuth() {
 }
 
 api.interceptors.request.use((config) => {
+  // Auth header (Bearer)
   if (typeof window !== 'undefined') {
     const auth = ensureSessionAuth()
     if (auth?.token) {
@@ -45,7 +46,20 @@ api.interceptors.request.use((config) => {
   }
 
   config.headers = config.headers || {}
-  config.headers['Content-Type'] = 'application/json'
+
+  // ✅ IMPORTANT:
+  // Ne pas forcer Content-Type = application/json si on envoie du FormData.
+  // Axios doit gérer le multipart/form-data + boundary automatiquement.
+  const isFormData =
+    typeof FormData !== 'undefined' && config.data instanceof FormData
+
+  if (!isFormData) {
+    config.headers['Content-Type'] = 'application/json'
+  } else {
+    // Au cas où un Content-Type aurait été fixé ailleurs
+    delete config.headers['Content-Type']
+    delete config.headers['content-type']
+  }
 
   return config
 })
