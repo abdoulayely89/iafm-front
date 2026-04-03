@@ -1,6 +1,6 @@
 {
-    "name": "IAFM - Plateforme de formations",
-    "short_name": "IAFM",
+    "name": "MIND-AI - Plateforme de formations",
+    "short_name": "MIND-AI",
     "start_url": "/",
     "scope": "/",
     "display": "standalone",

@@ -14,6 +14,7 @@ import {
   Divider,
   Select,
   Tag,
+  Spin,
 } from 'antd'
 import {
   UploadOutlined,
@@ -138,7 +139,7 @@ function LessonEditPage() {
 
       if (isNew) {
         if (!courseId) {
-          message.error("CourseId manquant pour la création de la leçon.")
+          message.error('CourseId manquant pour la création de la leçon.')
           setSaving(false)
           return
         }
@@ -190,9 +191,9 @@ function LessonEditPage() {
 
     try {
       setUploadingResource(true)
-      const { data } = await api.post('/admin/upload/document', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      })
+
+      // ✅ IMPORTANT : ne pas forcer Content-Type (Axios gère multipart + boundary)
+      const { data } = await api.post('/admin/upload/document', formData)
 
       const url = data?.file?.url
       if (!url) {
@@ -237,8 +238,12 @@ function LessonEditPage() {
 
     try {
       setUploadingVideo(true)
+
+      // ✅ IMPORTANT :
+      // 1) ne pas forcer Content-Type (Axios gère boundary)
+      // 2) augmenter le timeout uniquement pour l'upload vidéo
       const { data } = await api.post('/admin/upload/video', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+        timeout: 180000, // 3 minutes (ajuste si besoin)
       })
 
       const url = data?.file?.url
@@ -265,10 +270,7 @@ function LessonEditPage() {
       message.success('Vidéo uploadée pour cette leçon.')
     } catch (e) {
       console.error(e)
-      message.error(
-        e?.response?.data?.message ||
-          "Impossible d'uploader la vidéo."
-      )
+      message.error(e?.response?.data?.message || "Impossible d'uploader la vidéo.")
     } finally {
       setUploadingVideo(false)
       if (videoFileInputRef.current) videoFileInputRef.current.value = ''
@@ -311,11 +313,7 @@ function LessonEditPage() {
           </Form.Item>
 
           <Space size="large" style={{ width: '100%' }}>
-            <Form.Item
-              label="Ordre d’affichage"
-              name="order"
-              style={{ flex: 1 }}
-            >
+            <Form.Item label="Ordre d’affichage" name="order" style={{ flex: 1 }}>
               <InputNumber
                 min={0}
                 style={{ width: '100%' }}
@@ -323,16 +321,8 @@ function LessonEditPage() {
               />
             </Form.Item>
 
-            <Form.Item
-              label="Durée (minutes)"
-              name="durationMinutes"
-              style={{ flex: 1 }}
-            >
-              <InputNumber
-                min={0}
-                style={{ width: '100%' }}
-                placeholder="Ex : 15"
-              />
+            <Form.Item label="Durée (minutes)" name="durationMinutes" style={{ flex: 1 }}>
+              <InputNumber min={0} style={{ width: '100%' }} placeholder="Ex : 15" />
             </Form.Item>
           </Space>
         </Card>
@@ -347,10 +337,7 @@ function LessonEditPage() {
             onChange={handleVideoFileChange}
           />
 
-          <Space
-            align="start"
-            style={{ width: '100%', justifyContent: 'space-between' }}
-          >
+          <Space align="start" style={{ width: '100%', justifyContent: 'space-between' }}>
             <div style={{ flex: 1 }}>
               <Form.Item
                 label="Vidéo de la leçon"
@@ -359,11 +346,7 @@ function LessonEditPage() {
               >
                 <Select
                   allowClear
-                  placeholder={
-                    loadingVideos
-                      ? 'Chargement des vidéos...'
-                      : 'Choisir une vidéo'
-                  }
+                  placeholder={loadingVideos ? 'Chargement des vidéos...' : 'Choisir une vidéo'}
                   loading={loadingVideos}
                   showSearch
                   optionFilterProp="children"
@@ -372,9 +355,7 @@ function LessonEditPage() {
                     <Option key={file.url} value={file.url}>
                       <Space size={8}>
                         <Tag color="blue">Vidéo</Tag>
-                        <span>
-                          {file.originalName || file.path || file.url}
-                        </span>
+                        <span>{file.originalName || file.path || file.url}</span>
                       </Space>
                     </Option>
                   ))}
@@ -392,11 +373,7 @@ function LessonEditPage() {
                   Uploader une vidéo
                 </Button>
                 <Button type="default">
-                  <Link
-                    to="/admin/media"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
+                  <Link to="/admin/media" target="_blank" rel="noopener noreferrer">
                     Gérer les vidéos
                   </Link>
                 </Button>
@@ -413,11 +390,7 @@ function LessonEditPage() {
           </Form.Item>
 
           <Space size="large">
-            <Form.Item
-              label="Leçon avec quiz ?"
-              name="hasQuiz"
-              valuePropName="checked"
-            >
+            <Form.Item label="Leçon avec quiz ?" name="hasQuiz" valuePropName="checked">
               <Switch />
             </Form.Item>
 
@@ -431,10 +404,7 @@ function LessonEditPage() {
           </Space>
         </Card>
 
-        <Card
-          title="Ressources à télécharger (PDF, docs, etc.)"
-          style={{ marginBottom: 24 }}
-        >
+        <Card title="Ressources à télécharger (PDF, docs, etc.)" style={{ marginBottom: 24 }}>
           {/* input file caché pour ressources */}
           <input
             ref={resourceFileInputRef}
@@ -452,6 +422,24 @@ function LessonEditPage() {
                   const current = resources[index] || {}
                   const hasFile = !!current.fileUrl
 
+                  // ✅ Fix AntD warning : garder un suffix constant (même structure)
+                  const suffixNode = (
+                    <span style={{ display: 'inline-flex', width: 22, justifyContent: 'center' }}>
+                      {hasFile ? (
+                        <a
+                          href={current.fileUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          title="Ouvrir"
+                        >
+                          <FileOutlined />
+                        </a>
+                      ) : (
+                        <span />
+                      )}
+                    </span>
+                  )
+
                   return (
                     <Card
                       key={key}
@@ -460,11 +448,7 @@ function LessonEditPage() {
                       type="inner"
                       title={`Ressource ${index + 1}`}
                       extra={
-                        <Button
-                          type="link"
-                          danger
-                          onClick={() => remove(name)}
-                        >
+                        <Button type="link" danger onClick={() => remove(name)}>
                           Supprimer
                         </Button>
                       }
@@ -473,44 +457,22 @@ function LessonEditPage() {
                         {...restField}
                         label="Libellé"
                         name={[name, 'label']}
-                        rules={[
-                          {
-                            required: true,
-                            message: 'Le libellé est obligatoire.',
-                          },
-                        ]}
+                        rules={[{ required: true, message: 'Le libellé est obligatoire.' }]}
                       >
                         <Input placeholder="Ex : Support PDF, Fiche pratique, etc." />
                       </Form.Item>
 
-                      <Form.Item
-                        {...restField}
-                        label="URL du fichier"
-                        name={[name, 'fileUrl']}
-                      >
+                      <Form.Item {...restField} label="URL du fichier" name={[name, 'fileUrl']}>
                         <Input
                           placeholder="Laisser vide puis utiliser le bouton d’upload, ou coller une URL."
-                          suffix={
-                            hasFile ? (
-                              <a
-                                href={current.fileUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                              >
-                                <FileOutlined />
-                              </a>
-                            ) : null
-                          }
+                          suffix={suffixNode}
                         />
                       </Form.Item>
 
                       <Button
                         icon={<UploadOutlined />}
                         onClick={() => handleClickUploadResource(index)}
-                        loading={
-                          uploadingResource &&
-                          resourceIndexToUpload === index
-                        }
+                        loading={uploadingResource && resourceIndexToUpload === index}
                       >
                         Uploader un fichier pour cette ressource
                       </Button>

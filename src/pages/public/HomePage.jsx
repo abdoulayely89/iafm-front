@@ -112,7 +112,7 @@ function HomePage() {
                 L’école des compétences d’avenir
               </Tag>
               <Title level={1} className="hero-title">
-                IAFM – Formations concrètes pour accélérer votre carrière
+                MIND-AI – Formations concrètes pour accélérer votre carrière
               </Title>
               <Paragraph className="hero-subtitle">
                 Des parcours en ligne, structurés et actionnables, pour monter en
@@ -188,7 +188,7 @@ function HomePage() {
           >
             <Col>
               <Title level={3} style={{ marginBottom: 4 }}>
-                Découvrir l’IAFM
+                Découvrir MIND-AI
               </Title>
               <Paragraph type="secondary" style={{ margin: 0 }}>
                 En savoir plus sur notre vision, nos valeurs et notre pédagogie.
@@ -223,7 +223,7 @@ function HomePage() {
                     >
                       <div className="cms-page-card-body">
                         <Tag color="default" className="cms-page-tag">
-                          Page IAFM
+                          Page MIND-AI
                         </Tag>
                         <Meta title={page.title} description={description} />
                         <div className="cms-page-card-footer">

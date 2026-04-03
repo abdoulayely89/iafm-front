@@ -131,7 +131,7 @@ function AdminDashboard() {
           <Col xs={24} md={16}>
             <Space direction="vertical" size={4}>
               <Text className="admin-dashboard-badge">
-                Panneau de contrôle • IAFM
+                Panneau de contrôle • MIND-AI
               </Text>
               <Title level={2} style={{ marginBottom: 0, color: '#0f172a' }}>
                 Bienvenue sur le dashboard admin

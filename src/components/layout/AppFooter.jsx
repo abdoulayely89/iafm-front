@@ -29,7 +29,7 @@ function AppFooter() {
       <div className="app-footer-inner">
         <div className="app-footer-left">
           <Text type="secondary">
-            © {year} IAFM. Tous droits réservés.
+            © {year} MIND-AI. Tous droits réservés.
           </Text>
         </div>
         <div className="app-footer-right">

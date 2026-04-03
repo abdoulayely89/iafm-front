@@ -1,3 +1,4 @@
+// src/pages/admin/courses/CourseEditPage.jsx
 import React, { useEffect, useState, useRef } from 'react'
 import { useNavigate, useParams, Link } from 'react-router-dom'
 import {
@@ -117,14 +118,15 @@ function CourseEditPage() {
     if (!file) return
 
     const formData = new FormData()
+    // ✅ backend attend upload.single('file')
     formData.append('file', file)
     formData.append('folder', 'images/courses')
 
     try {
       setUploadingThumb(true)
-      const { data } = await api.post('/admin/upload/image', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      })
+
+      // ✅ IMPORTANT : ne pas forcer Content-Type (Axios doit gérer boundary)
+      const { data } = await api.post('/admin/upload/image', formData)
 
       const url = data?.file?.url
       if (!url) {
@@ -158,15 +160,15 @@ function CourseEditPage() {
     if (!file) return
 
     const formData = new FormData()
+    // ✅ backend attend upload.single('file')
     formData.append('file', file)
     formData.append('folder', 'videos/courses/promo')
 
     try {
       setUploadingPromo(true)
-      // utilise ton endpoint existant /api/admin/upload/video
-      const { data } = await api.post('/admin/upload/video', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      })
+
+      // ✅ IMPORTANT : ne pas forcer Content-Type (Axios doit gérer boundary)
+      const { data } = await api.post('/admin/upload/video', formData)
 
       const url = data?.file?.url
       if (!url) {
@@ -457,13 +459,10 @@ function CourseEditPage() {
           style={{
             width: '100%',
           }}
-          extra={
-            <Link to={`/admin/courses/${id}/lessons`}>Voir toutes</Link>
-          }
+          extra={<Link to={`/admin/courses/${id}/lessons`}>Voir toutes</Link>}
         >
           <Text type="secondary">
-            Gérer les leçons, leur contenu et l’ordre d’apparition pour ce
-            cours.
+            Gérer les leçons, leur contenu et l’ordre d’apparition pour ce cours.
           </Text>
           <div style={{ marginTop: 16 }}>
             <Button type="primary">
