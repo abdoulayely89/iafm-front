@@ -155,7 +155,7 @@ function HomePage() {
               <Card className="hero-card" bordered={false}>
                 <Title level={4}>Reprendre sa carrière en main</Title>
                 <Paragraph type="secondary">
-                  L’IAFM vous aide à identifier un projet professionnel clair,
+                  MIND-AI vous aide à identifier un projet professionnel clair,
                   choisir une trajectoire de formation adaptée et passer à
                   l’action étape par étape.
                 </Paragraph>
